@@ -1,4 +1,4 @@
-# 🌊 YamunaPulse (यमुना पल्स)
+# 🌊 YamunaPulse 
 
 > **Continuous Spatiotemporal Satellite Water Quality & Anomaly Detection System**  
 > 48 km multi-spectral Earth observation monitoring of the Yamuna River corridor from its Delhi entry at Palla to its exit at Asgarpur / Okhla.
