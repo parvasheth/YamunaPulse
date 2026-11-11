@@ -223,62 +223,62 @@ export const RiverMap: React.FC<RiverMapProps> = ({
         <button
           onClick={() => setBasemap('satellite')}
           title="High-resolution aerial satellite imagery (Esri World Imagery, 100% Free)"
-          className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${
+          className={`flex items-center space-x-1 px-1.5 sm:px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-medium transition-all ${
             basemap === 'satellite'
               ? 'bg-cyan-500 text-slate-950 font-bold shadow'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           <Satellite className="w-3 h-3" />
-          <span>Satellite</span>
+          <span className="hidden xs:inline">Satellite</span>
         </button>
 
         <button
           onClick={() => setBasemap('dark')}
           title="High-contrast dark canvas map (Esri Dark Canvas, 100% Free)"
-          className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${
+          className={`flex items-center space-x-1 px-1.5 sm:px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-medium transition-all ${
             basemap === 'dark'
               ? 'bg-cyan-500 text-slate-950 font-bold shadow'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           <Moon className="w-3 h-3" />
-          <span>Dark Canvas</span>
+          <span className="hidden xs:inline">Dark</span>
         </button>
 
         <button
           onClick={() => setBasemap('streets')}
           title="OpenStreetMap standard vector tiles"
-          className={`flex items-center space-x-1 px-2 py-1 rounded-lg text-[11px] font-medium transition-all ${
+          className={`flex items-center space-x-1 px-1.5 sm:px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-medium transition-all ${
             basemap === 'streets'
               ? 'bg-cyan-500 text-slate-950 font-bold shadow'
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           <MapIcon className="w-3 h-3" />
-          <span>Streets</span>
+          <span className="hidden xs:inline">Streets</span>
         </button>
       </div>
 
       {/* Dynamic Spectral Color Legend Bottom Left */}
-      <div className="absolute bottom-4 left-3 z-10 bg-slate-900/90 border border-slate-800 backdrop-blur-md p-2.5 rounded-xl shadow-2xl max-w-xs text-xs">
-        <div className="flex items-center justify-between font-semibold text-slate-200 mb-1.5">
-          <span>{metricConfig.shortName}</span>
-          <span className="text-[10px] text-slate-400">150m Cell</span>
+      <div className="absolute bottom-3 left-3 z-10 bg-slate-900/90 border border-slate-800 backdrop-blur-md p-2 rounded-xl shadow-2xl max-w-[200px] sm:max-w-xs text-[11px]">
+        <div className="flex items-center justify-between font-semibold text-slate-200 mb-1">
+          <span className="truncate">{metricConfig.shortName}</span>
+          <span className="text-[9px] text-slate-400 font-mono">150m Cell</span>
         </div>
-        <div className="w-48 h-2.5 rounded-full overflow-hidden bg-gradient-to-r from-emerald-500 via-amber-400 to-rose-600 border border-slate-700/60 mb-1" />
-        <div className="flex justify-between text-[10px] text-slate-400">
+        <div className="w-32 sm:w-48 h-2 sm:h-2.5 rounded-full overflow-hidden bg-gradient-to-r from-emerald-500 via-amber-400 to-rose-600 border border-slate-700/60 mb-1" />
+        <div className="flex justify-between text-[9px] sm:text-[10px] text-slate-400">
           <span>{metricConfig.colorLabelLow}</span>
           <span>{metricConfig.colorLabelHigh}</span>
         </div>
-        <div className="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
+        <div className="mt-1.5 pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[9px] sm:text-[10px] text-slate-400">
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-orange-500 inline-block"></span>
-            Drain Outfall
+            Drain
           </span>
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 border border-cyan-400 inline-block"></span>
-            150m BBox
+            BBox
           </span>
         </div>
       </div>

@@ -82,42 +82,42 @@ export const TimelineScrubber: React.FC<TimelineScrubberProps> = ({
   return (
     <div className="bg-slate-900/90 border border-slate-800 backdrop-blur rounded-xl p-3.5 shadow-xl">
       {/* Top Bar: Pass Info & Key Event Jumpers */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-        <div className="flex items-center space-x-2">
-          <span className="flex items-center space-x-1.5 text-sm font-bold text-white bg-slate-800/90 px-2.5 py-1 rounded-lg border border-slate-700">
-            <Calendar className="w-3.5 h-3.5 text-cyan-400" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2.5">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 flex-wrap gap-y-1">
+          <span className="flex items-center space-x-1.5 text-xs sm:text-sm font-bold text-white bg-slate-800/90 px-2 sm:px-2.5 py-1 rounded-lg border border-slate-700">
+            <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-cyan-400" />
             <span>{formattedDate}</span>
           </span>
 
           <span
-            className={`px-2 py-0.5 text-xs font-semibold rounded-full border ${getSeasonBadge(
+            className={`px-1.5 sm:px-2 py-0.5 text-[10px] sm:text-xs font-semibold rounded-full border ${getSeasonBadge(
               currentPass.season
             )}`}
           >
             {currentPass.season}
           </span>
 
-          <span className="text-xs font-medium text-slate-300 bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-700/60 flex items-center gap-1">
+          <span className="text-[10px] sm:text-xs font-medium text-slate-300 bg-slate-800/60 px-1.5 sm:px-2 py-0.5 rounded-md border border-slate-700/60 flex items-center gap-1">
             <Clock className="w-3 h-3 text-slate-400" />
             <span>{currentPass.nth_weekday_of_month}</span>
           </span>
 
-          <span className="text-xs text-slate-400 flex items-center gap-1">
+          <span className="text-[10px] sm:text-xs text-slate-400 flex items-center gap-1 hidden xs:flex">
             <Cloud className="w-3 h-3 text-slate-400" />
-            <span>Cloud {currentPass.cloud_cover_percent.toFixed(1)}%</span>
+            <span>{currentPass.cloud_cover_percent.toFixed(0)}%</span>
           </span>
         </div>
 
-        {/* Quick event jump buttons */}
-        <div className="flex items-center space-x-1.5 text-[11px]">
-          <span className="text-slate-500 font-medium">Quick Jump:</span>
+        {/* Quick event jump buttons (Horizontal scrollable on mobile) */}
+        <div className="flex items-center space-x-1.5 text-[10px] sm:text-[11px] overflow-x-auto no-scrollbar py-0.5">
+          <span className="text-slate-500 font-medium flex-shrink-0">Jump:</span>
           <button
             onClick={() => {
               // Find winter froth pass (Dec)
               const idx = passes.findIndex((p) => p.month === 12 && p.season === 'Winter');
               if (idx !== -1) onIndexChange(idx);
             }}
-            className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700 transition-colors"
+            className="flex-shrink-0 px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700 transition-colors"
           >
             ❄️ Winter Foam
           </button>
@@ -127,9 +127,9 @@ export const TimelineScrubber: React.FC<TimelineScrubberProps> = ({
               const idx = passes.findIndex((p) => p.season === 'Monsoon');
               if (idx !== -1) onIndexChange(idx);
             }}
-            className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-blue-300 rounded border border-slate-700 transition-colors"
+            className="flex-shrink-0 px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-blue-300 rounded border border-slate-700 transition-colors"
           >
-            🌊 Monsoon Flush
+            🌊 Monsoon
           </button>
           <button
             onClick={() => {
@@ -137,22 +137,22 @@ export const TimelineScrubber: React.FC<TimelineScrubberProps> = ({
               const idx = passes.findIndex((p) => p.nth_weekday_of_month.includes('2nd Friday'));
               if (idx !== -1) onIndexChange(idx);
             }}
-            className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded border border-slate-700 transition-colors"
+            className="flex-shrink-0 px-2 py-0.5 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded border border-slate-700 transition-colors"
           >
-            ⚠️ 2nd Fri Purge
+            ⚠️ 2nd Fri
           </button>
         </div>
       </div>
 
-      {/* Scrubber Slider */}
-      <div className="relative mb-2 flex items-center space-x-3">
+      {/* Scrubber Slider with Touch Target */}
+      <div className="relative mb-2 flex items-center space-x-3 py-1">
         <input
           type="range"
           min={0}
           max={passes.length - 1}
           value={currentIndex}
           onChange={handleSliderChange}
-          className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400 focus:outline-none"
+          className="w-full h-3 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400 focus:outline-none"
         />
       </div>
 

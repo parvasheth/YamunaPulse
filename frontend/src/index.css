@@ -39,3 +39,17 @@
   margin: 10px 12px;
   line-height: 1.4;
 }
+
+/* Touch and mobile utility classes */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Safe touch highlight */
+* {
+  -webkit-tap-highlight-color: transparent;
+}

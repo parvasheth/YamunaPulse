@@ -89,37 +89,39 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
   };
 
   return (
-    <div className="bg-slate-900/90 border border-slate-800 backdrop-blur rounded-xl p-4 shadow-xl flex flex-col h-full">
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+    <div className="bg-slate-900/90 border border-slate-800 backdrop-blur rounded-xl p-3 sm:p-4 shadow-xl flex flex-col h-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 mb-2 sm:mb-3">
         <div>
-          <div className="flex items-center space-x-2">
-            <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
-              <Compass className="w-4 h-4 text-cyan-400" />
-              Longitudinal Spatial Cascade Profile
+          <div className="flex items-center space-x-2 flex-wrap">
+            <h3 className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
+              <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 flex-shrink-0" />
+              <span>Spatial Profile (Palla &rarr; Asgarpur)</span>
             </h3>
-            <span className="text-xs text-slate-400 font-mono">
-              (Node 1 Palla &rarr; Node 18 Asgarpur)
-            </span>
+            {selectedPoint && (
+              <span className="text-[10px] sm:text-xs text-amber-300 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800/60 font-medium">
+                N{selectedPoint.node_id} ({selectedPoint.name})
+              </span>
+            )}
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Synchronized with active satellite pass. Watch pollution jump at drain outfalls.
+          <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 hidden xs:block">
+            Watch pollution surge at Najafgarh and Barapullah drain outfalls.
           </p>
         </div>
 
         {/* Legend pills */}
-        <div className="flex items-center space-x-2 text-[11px]">
+        <div className="flex items-center space-x-2 text-[10px] sm:text-[11px] flex-shrink-0">
           <span className="flex items-center gap-1 text-slate-400">
             <span className="w-2.5 h-0.5 bg-rose-500 inline-block"></span>
-            Critical Threshold ({metricConfig.criticalThreshold})
+            <span>Threshold ({metricConfig.criticalThreshold})</span>
           </span>
-          <span className="flex items-center gap-1 text-amber-400 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-800/60">
+          <span className="flex items-center gap-1 text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800/60">
             <ArrowDownRight className="w-3 h-3" />
-            Drain Breakpoints
+            <span>Drains</span>
           </span>
         </div>
       </div>
 
-      <div className="flex-1 w-full min-h-[220px]">
+      <div className="flex-1 w-full min-h-[200px] sm:min-h-[240px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={chartData}

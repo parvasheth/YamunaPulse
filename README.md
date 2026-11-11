@@ -42,6 +42,12 @@ Experience the live application deployed and accessible over a secure HTTPS publ
 *In-app education explaining satellite spectral indices, river hydrodynamics, and drain pollution sources.*
 ![Field Guide](screenshots/05_glossary_modal.png)
 
+### 6. 100% Mobile Responsive Experience
+*Full mobile optimization with thumb-friendly bottom navigation, responsive Map vs Profile view toggling, and horizontal swipeable matrix grids.*
+| Mobile River Map | Mobile Longitudinal Profile |
+|:---:|:---:|
+| ![Mobile Map](screenshots/mobile_01_monitor_map.png) | ![Mobile Profile](screenshots/mobile_02_monitor_profile.png) |
+
 ---
 
 ## 🌟 Key Features

@@ -198,20 +198,20 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
         </div>
 
         {/* Matrix Switcher Tabs */}
-        <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+        <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800 overflow-x-auto no-scrollbar max-w-full">
           <button
             onClick={() => {
               setActiveMatrix('nth');
               setActiveColumnIndex(null);
             }}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
               activeMatrix === 'nth'
                 ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Clock className="w-3.5 h-3.5" />
-            <span>Nth-Weekday of Month</span>
+            <span>Nth-Weekday</span>
           </button>
 
           <button
@@ -219,7 +219,7 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
               setActiveMatrix('dow');
               setActiveColumnIndex(null);
             }}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
               activeMatrix === 'dow'
                 ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                 : 'text-slate-400 hover:text-slate-200'
@@ -234,7 +234,7 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
               setActiveMatrix('month');
               setActiveColumnIndex(null);
             }}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
               activeMatrix === 'month'
                 ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                 : 'text-slate-400 hover:text-slate-200'
@@ -247,17 +247,17 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
       </div>
 
       {/* Hands-on Interactive Control Bar (Play/Pause, Layman Mode, Filter) */}
-      <div className="bg-slate-950/80 border border-slate-800 p-2.5 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div className="bg-slate-950/80 border border-slate-800 p-2 sm:p-2.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 text-xs">
         {/* Play/Pause Tour Controls */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 flex-wrap gap-y-1">
           <span className="text-slate-400 font-medium flex items-center gap-1">
             <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Column Tour:</span>
+            <span className="hidden xs:inline">Column Tour:</span>
           </span>
 
           <button
             onClick={() => setIsTourPlaying(!isTourPlaying)}
-            className={`flex items-center space-x-1.5 px-3 py-1 rounded-lg font-bold transition-all shadow-sm ${
+            className={`flex items-center space-x-1.5 px-2.5 sm:px-3 py-1 rounded-lg font-bold transition-all shadow-sm ${
               isTourPlaying
                 ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 shadow-amber-500/20'
                 : 'bg-cyan-500 hover:bg-cyan-600 text-slate-950 shadow-cyan-500/20'
@@ -266,7 +266,7 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
             {isTourPlaying ? (
               <>
                 <Pause className="w-3 h-3" />
-                <span>Pause Tour</span>
+                <span>Pause</span>
               </>
             ) : (
               <>
@@ -285,7 +285,7 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
               }
             }}
             title="Step Back"
-            className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700"
+            className="p-1 sm:p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700"
           >
             <SkipBack className="w-3 h-3" />
           </button>
@@ -299,13 +299,13 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
               }
             }}
             title="Step Forward"
-            className="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700"
+            className="p-1 sm:p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700"
           >
             <SkipForward className="w-3 h-3" />
           </button>
 
           {/* Tour Speed Selector */}
-          <div className="flex items-center space-x-1 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800 text-[10px]">
+          <div className="flex items-center space-x-0.5 sm:space-x-1 bg-slate-900 px-1 py-0.5 rounded border border-slate-800 text-[10px]">
             <FastForward className="w-2.5 h-2.5 text-slate-400" />
             {[1, 1.5, 3].map((spd) => (
               <button
@@ -323,42 +323,42 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
           {activeColumnIndex !== null && (
             <button
               onClick={() => setActiveColumnIndex(null)}
-              className="text-[11px] text-slate-400 hover:text-slate-200 underline ml-1"
+              className="text-[10px] sm:text-[11px] text-slate-400 hover:text-slate-200 underline ml-1"
             >
-              Reset Tour
+              Reset
             </button>
           )}
         </div>
 
         {/* Layman Mode & Reach Filters */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto no-scrollbar py-0.5">
           {/* Layman Translation Toggle */}
           <button
             onClick={() => setIsLaymanMode(!isLaymanMode)}
-            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-lg border font-medium transition-all ${
+            className={`flex-shrink-0 flex items-center space-x-1.5 px-2 sm:px-2.5 py-1 rounded-lg border font-medium transition-all text-[11px] sm:text-xs ${
               isLaymanMode
                 ? 'bg-emerald-500/20 border-emerald-500/60 text-emerald-300'
                 : 'bg-slate-900 border-slate-700 text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Eye className="w-3.5 h-3.5" />
-            <span>Layman Words ({isLaymanMode ? 'ON' : 'OFF'})</span>
+            <Eye className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+            <span>Layman ({isLaymanMode ? 'ON' : 'OFF'})</span>
           </button>
 
           {/* Node Reach Filter */}
-          <div className="flex items-center space-x-1 bg-slate-900 p-0.5 rounded-lg border border-slate-800 text-[11px]">
-            <Filter className="w-3 h-3 text-slate-500 ml-1.5" />
+          <div className="flex-shrink-0 flex items-center space-x-1 bg-slate-900 p-0.5 rounded-lg border border-slate-800 text-[10px] sm:text-[11px]">
+            <Filter className="w-3 h-3 text-slate-500 ml-1" />
             {(['all', 'upstream', 'urban'] as const).map((mode) => (
               <button
                 key={mode}
                 onClick={() => setNodeFilter(mode)}
-                className={`px-2 py-0.5 rounded font-medium transition-all ${
+                className={`px-1.5 sm:px-2 py-0.5 rounded font-medium transition-all ${
                   nodeFilter === mode
                     ? 'bg-blue-600 text-white'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                {mode === 'all' ? 'All 18' : mode === 'upstream' ? 'Clean Baseline (1-4)' : 'Urban Drains (5-18)'}
+                {mode === 'all' ? 'All 18' : mode === 'upstream' ? 'Clean (1-4)' : 'Drains (5-18)'}
               </button>
             ))}
           </div>
@@ -431,12 +431,20 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
         )}
       </div>
 
+      {/* Mobile Swipe Hint */}
+      <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-slate-400 px-1">
+        <span>Multi-Year Matrix &bull; Click any cell to inspect</span>
+        <span className="text-cyan-400 sm:hidden flex items-center gap-1">
+          👉 Swipe horizontally
+        </span>
+      </div>
+
       {/* 2D Heatmap Grid Container */}
-      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60 p-2">
+      <div className="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60 p-1.5 sm:p-2">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr>
-              <th className="p-2 text-slate-400 font-medium sticky left-0 bg-slate-950/95 z-20 min-w-[170px] border-b border-slate-800">
+              <th className="p-1.5 sm:p-2 text-slate-400 font-medium sticky left-0 bg-slate-950 z-20 min-w-[130px] sm:min-w-[170px] border-b border-slate-800">
                 Monitoring Node
               </th>
               {columns.map((col, idx) => {

@@ -71,6 +71,12 @@ YamunaPulse is an end-to-end spatiotemporal satellite water quality & anomaly de
     - Integrated zero-credential public Cloudflare Quick Tunnel serving the full application (React SPA + FastAPI backend + DuckDB analytical engine) from one single URL.
     - Added **ShareModal** with 1-click clipboard copy, QR/mobile instructions, and permanent cloud deployment guides.
     - Script helpers (`share.ps1` and `share.bat`) for launching public tunnels anytime.
+  - **Full Mobile Responsiveness & Thumb-Friendly Experience**:
+    - Mobile Segmented Switcher in Monitor tab (`Map View` | `Profile Chart` | `Split View`).
+    - Fixed Thumb-Accessible Mobile Bottom Navigation Bar (`Monitor` | `Patterns` | `Seasonal` | `Anomalies`).
+    - Horizontal scrollable touch chips for spectral metric selector and quick-jump timeline events.
+    - Touch-optimized sticky columns and swipe indicators for 2D Pattern Discovery matrices.
+    - Verified on iPhone / Android viewports (390x844) with Playwright test suite (`verify_mobile.mjs`) passing with 0 console errors.
 
 - [x] **Milestone 5: End-to-End Verification & Backfill**
   - Python test suite: 11/11 tests passed (`pytest -v tests/test_pipeline.py`).
