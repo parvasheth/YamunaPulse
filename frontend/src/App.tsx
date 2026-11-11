@@ -31,7 +31,7 @@ export const App: React.FC = () => {
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
 
   // Live Cloudflare public tunnel URL for sharing
-  const publicShareUrl = 'https://wish-bbs-lace-promises.trycloudflare.com';
+  const publicShareUrl = 'https://contain-taste-regulatory-insight.trycloudflare.com';
 
   const loadPasses = () => {
     fetch('/api/passes?limit=500')

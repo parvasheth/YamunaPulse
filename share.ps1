@@ -4,7 +4,7 @@ Write-Host "  Created by Parva Sheth" -ForegroundColor Yellow
 Write-Host "========================================================" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "Routing public HTTPS traffic directly to local FastAPI + React build (port 8000)..." -ForegroundColor Green
+Write-Host "Protocol: HTTP/2 (TCP 443) - Persistent connection" -ForegroundColor Gray
 Write-Host "Press Ctrl+C to terminate tunnel at any time." -ForegroundColor Gray
 Write-Host ""
-& ".\tools\cloudflared.exe" tunnel --url http://127.0.0.1:8000
-
+& ".\tools\cloudflared.exe" tunnel --protocol http2 --url http://127.0.0.1:8000

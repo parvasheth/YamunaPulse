@@ -3,7 +3,7 @@
 > **Continuous Spatiotemporal Satellite Water Quality & Anomaly Detection System**  
 > 48 km multi-spectral Earth observation monitoring of the Yamuna River corridor from its Delhi entry at Palla to its exit at Asgarpur / Okhla.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-TryCloudflare-blue?style=for-the-badge&logo=cloudflare)](https://wish-bbs-lace-promises.trycloudflare.com)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-TryCloudflare-blue?style=for-the-badge&logo=cloudflare)](https://contain-taste-regulatory-insight.trycloudflare.com)
 [![Author](https://img.shields.io/badge/Author-Parva_Sheth-amber?style=for-the-badge)](https://github.com/parvasheth)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Satellite](https://img.shields.io/badge/Earth_Observation-Sentinel--2_L2A-cyan?style=for-the-badge)](https://planetarycomputer.microsoft.com/)
@@ -15,7 +15,7 @@
 
 ## 🔗 Live Public Web Application
 Experience the live application deployed and accessible over a secure HTTPS public tunnel:  
-👉 **[https://wish-bbs-lace-promises.trycloudflare.com](https://wish-bbs-lace-promises.trycloudflare.com)**  
+👉 **[https://contain-taste-regulatory-insight.trycloudflare.com](https://contain-taste-regulatory-insight.trycloudflare.com)**  
 *(100% free, no login or credentials required — runs on desktop, tablet, and mobile).*
 
 ---
