@@ -79,6 +79,7 @@ YamunaPulse is an end-to-end spatiotemporal satellite water quality & anomaly de
     - FastAPI Unified Service (API + React SPA): `http://127.0.0.1:8000`
     - Vite Dev Frontend: `http://127.0.0.1:5173`
     - **Live Public URL**: `https://wish-bbs-lace-promises.trycloudflare.com`
+    - **GitHub Repository**: [https://github.com/parvasheth/YamunaPulse](https://github.com/parvasheth/YamunaPulse)
 
 ---
 
