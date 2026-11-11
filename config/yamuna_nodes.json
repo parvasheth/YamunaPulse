@@ -1,0 +1,207 @@
+{
+  "river_name": "Yamuna",
+  "stretch": "Delhi Segment (Palla to Asgarpur)",
+  "total_km": 48.0,
+  "datum": "WGS84",
+  "buffer_size_meters": 150,
+  "nodes": [
+    {
+      "node_id": 1,
+      "name": "Palla Entry Point",
+      "river_km": 0.0,
+      "latitude": 28.8294,
+      "longitude": 77.2242,
+      "drain_inflow": null,
+      "drain_impact_tier": "baseline",
+      "segment": "Upper Rural Reach",
+      "description": "Delhi entry point with baseline freshwater quality upstream of urban sewage drains."
+    },
+    {
+      "node_id": 2,
+      "name": "Jagatpur Reach",
+      "river_km": 8.5,
+      "latitude": 28.7560,
+      "longitude": 77.2285,
+      "drain_inflow": null,
+      "drain_impact_tier": "low",
+      "segment": "Upper Rural Reach",
+      "description": "Upstream agricultural floodplain reach before urban river containment."
+    },
+    {
+      "node_id": 3,
+      "name": "Wazirabad Barrage Upstream",
+      "river_km": 13.5,
+      "latitude": 28.7118,
+      "longitude": 77.2345,
+      "drain_inflow": null,
+      "drain_impact_tier": "low",
+      "segment": "Pondage Zone",
+      "description": "Raw drinking water abstraction point for Delhi water treatment plants."
+    },
+    {
+      "node_id": 4,
+      "name": "Wazirabad Barrage Downstream",
+      "river_km": 14.5,
+      "latitude": 28.7050,
+      "longitude": 77.2370,
+      "drain_inflow": null,
+      "drain_impact_tier": "moderate",
+      "segment": "Pondage Spill",
+      "description": "Immediate downstream of barrage; almost zero fresh river flow released during non-monsoon periods."
+    },
+    {
+      "node_id": 5,
+      "name": "Najafgarh Drain Outfall",
+      "river_km": 16.5,
+      "latitude": 28.6948,
+      "longitude": 77.2335,
+      "drain_inflow": "Najafgarh Drain",
+      "drain_impact_tier": "critical",
+      "segment": "Central Urban Reach",
+      "description": "Major pollution inflow accounting for ~60% of total sewage/wastewater discharges into the river."
+    },
+    {
+      "node_id": 6,
+      "name": "ISBT Kashmere Gate",
+      "river_km": 19.5,
+      "latitude": 28.6710,
+      "longitude": 77.2355,
+      "drain_inflow": "Mori Gate Drain",
+      "drain_impact_tier": "high",
+      "segment": "Central Urban Reach",
+      "description": "Urban channel reach heavily loaded with domestic sewage and runoff."
+    },
+    {
+      "node_id": 7,
+      "name": "Old Railway Bridge (Loha Pul)",
+      "river_km": 21.5,
+      "latitude": 28.6575,
+      "longitude": 77.2458,
+      "drain_inflow": "Bela Road Drain",
+      "drain_impact_tier": "high",
+      "segment": "Central Urban Reach",
+      "description": "Historic landmark gauging site; continuous organic load and elevated turbidity."
+    },
+    {
+      "node_id": 8,
+      "name": "Geeta Colony / Shantivan",
+      "river_km": 23.5,
+      "latitude": 28.6430,
+      "longitude": 77.2540,
+      "drain_inflow": "Civil Lines Drain",
+      "drain_impact_tier": "high",
+      "segment": "Central Urban Reach",
+      "description": "Central river corridor with substantial domestic and industrial outfalls."
+    },
+    {
+      "node_id": 9,
+      "name": "ITO Barrage Upstream",
+      "river_km": 25.5,
+      "latitude": 28.6295,
+      "longitude": 77.2530,
+      "drain_inflow": "Drain No. 12",
+      "drain_impact_tier": "high",
+      "segment": "Central Urban Reach",
+      "description": "Stagnant urban pool behind ITO Barrage gates with severe algal blooms."
+    },
+    {
+      "node_id": 10,
+      "name": "Delhi Gate Drain Outfall",
+      "river_km": 26.5,
+      "latitude": 28.6250,
+      "longitude": 77.2545,
+      "drain_inflow": "Delhi Gate Drain",
+      "drain_impact_tier": "critical",
+      "segment": "Central Urban Reach",
+      "description": "Heavy untreated domestic wastewater and industrial effluent outfall."
+    },
+    {
+      "node_id": 11,
+      "name": "Barapullah / Nizamuddin Reach",
+      "river_km": 30.5,
+      "latitude": 28.5910,
+      "longitude": 77.2625,
+      "drain_inflow": "Barapullah Drain",
+      "drain_impact_tier": "critical",
+      "segment": "South Central Reach",
+      "description": "Third largest drain outfall carrying sewage from South Delhi and satellite colonies."
+    },
+    {
+      "node_id": 12,
+      "name": "DND Flyway Reach",
+      "river_km": 32.5,
+      "latitude": 28.5775,
+      "longitude": 77.2790,
+      "drain_inflow": "Sen Nursing Home Drain",
+      "drain_impact_tier": "high",
+      "segment": "South Central Reach",
+      "description": "Broad meandering section characterized by persistent black-sludge deposition."
+    },
+    {
+      "node_id": 13,
+      "name": "Okhla Barrage Upstream",
+      "river_km": 36.0,
+      "latitude": 28.5585,
+      "longitude": 77.3075,
+      "drain_inflow": "Maharani Bagh Drain",
+      "drain_impact_tier": "high",
+      "segment": "Okhla Pondage",
+      "description": "Upstream of Okhla Barrage with thick foam mats and excessive surfactant concentrations."
+    },
+    {
+      "node_id": 14,
+      "name": "Kalindi Kunj / Bird Sanctuary",
+      "river_km": 38.0,
+      "latitude": 28.5445,
+      "longitude": 77.3115,
+      "drain_inflow": "Kalkaji Drain",
+      "drain_impact_tier": "high",
+      "segment": "Okhla Pondage",
+      "description": "Site of toxic white froth during winter and post-monsoon seasons."
+    },
+    {
+      "node_id": 15,
+      "name": "Okhla Barrage Downstream",
+      "river_km": 40.0,
+      "latitude": 28.5365,
+      "longitude": 77.3190,
+      "drain_inflow": "Shahdara Drain Outfall",
+      "drain_impact_tier": "critical",
+      "segment": "Lower Industrial Reach",
+      "description": "Inflow of Shahdara drain carrying heavy untreated industrial and urban effluents from East Delhi."
+    },
+    {
+      "node_id": 16,
+      "name": "Jaitpur Reach",
+      "river_km": 42.5,
+      "latitude": 28.5280,
+      "longitude": 77.3245,
+      "drain_inflow": "Tehkhand Drain",
+      "drain_impact_tier": "high",
+      "segment": "Lower Industrial Reach",
+      "description": "Dense informal settlements and industrial discharges from Okhla Industrial Area."
+    },
+    {
+      "node_id": 17,
+      "name": "Madanpur Khadar",
+      "river_km": 45.0,
+      "latitude": 28.5190,
+      "longitude": 77.3295,
+      "drain_inflow": "Tughlakabad Drain",
+      "drain_impact_tier": "high",
+      "segment": "Lower Industrial Reach",
+      "description": "Confluence with Tughlakabad drain system carrying chemical and dye industry effluents."
+    },
+    {
+      "node_id": 18,
+      "name": "Shahdara Confluence & Asgarpur",
+      "river_km": 48.0,
+      "latitude": 28.5130,
+      "longitude": 77.3340,
+      "drain_inflow": "Agra Canal / Asgarpur Confluence",
+      "drain_impact_tier": "critical",
+      "segment": "Exit Border Reach",
+      "description": "Yamuna leaves NCT Delhi into Uttar Pradesh; peak cumulative chemical and organic pollution."
+    }
+  ]
+}

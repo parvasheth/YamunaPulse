@@ -1,0 +1,13 @@
+fastapi>=0.115.0
+uvicorn>=0.30.0
+pydantic>=2.8.0
+duckdb>=1.0.0
+numpy>=2.0.0
+pandas>=2.2.0
+scipy>=1.14.0
+shapely>=2.0.0
+requests>=2.32.0
+pystac-client>=0.8.0
+planetary-computer>=1.0.0
+python-dateutil>=2.9.0
+
