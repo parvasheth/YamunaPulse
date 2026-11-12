@@ -90,7 +90,7 @@ YamunaPulse is an end-to-end spatiotemporal satellite water quality & anomaly de
     - Vite Dev Frontend: `http://127.0.0.1:5173`
     - **Permanent 24/7 Production URL**: [https://yamunapulse.onrender.com/](https://yamunapulse.onrender.com/)
     - **Local Session Tunnel**: [https://contain-taste-regulatory-insight.trycloudflare.com](https://contain-taste-regulatory-insight.trycloudflare.com)
-    - **GitHub Repository**: [https://github.com/parvasheth/YamunaPulse](https://github.com/parvasheth/YamunaPulse)
+    - **GitHub Repository**: [https://github.com/parvasheth/YamunaPulse](https://github.com/parvasheth/YamunaPulse) (Repository Homepage set to `https://yamunapulse.onrender.com/`, topics configured, and README badges live synced)
 
 ---
 
