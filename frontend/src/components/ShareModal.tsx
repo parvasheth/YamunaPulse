@@ -18,10 +18,10 @@ export const ShareModal: React.FC<ShareModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Use the active Cloudflare tunnel URL or current origin if already on the tunnel
-  const shareableUrl = window.location.origin.includes('trycloudflare.com')
-    ? window.location.origin
-    : (publicUrl || window.location.origin);
+  // Use the active production URL or current origin
+  const shareableUrl = (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1'))
+    ? (publicUrl || 'https://yamunapulse.onrender.com')
+    : window.location.origin;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareableUrl);

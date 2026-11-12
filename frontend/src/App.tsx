@@ -30,10 +30,10 @@ export const App: React.FC = () => {
   const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
 
-  // Dynamic public share URL: uses live production origin when deployed, or active tunnel fallback
+  // Dynamic public share URL: uses live production origin when deployed, or active 24/7 Render URL
   const publicShareUrl = typeof window !== 'undefined' && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')
     ? window.location.origin
-    : 'https://contain-taste-regulatory-insight.trycloudflare.com';
+    : 'https://yamunapulse.onrender.com';
 
   const loadPasses = () => {
     fetch('/api/passes?limit=500')
