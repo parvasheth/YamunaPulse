@@ -13,10 +13,21 @@
 
 ---
 
-## 🔗 Live Public Web Application
-Experience the live application deployed and accessible over a secure HTTPS public tunnel:  
+## 🌐 Live Public Access & 24/7 Deployment
+
+### 1. Instant Active Live Demo (TryCloudflare Tunnel)
+Experience the live application running right now:  
 👉 **[https://contain-taste-regulatory-insight.trycloudflare.com](https://contain-taste-regulatory-insight.trycloudflare.com)**  
-*(100% free, no login or credentials required — runs on desktop, tablet, and mobile).*
+*(100% free, zero login or credentials required — runs on desktop, tablet, and mobile).*
+
+### 2. Deploy 24/7 Permanent Cloud URL (Render - 100% Free Forever)
+To get a permanent, always-online URL (e.g. `https://yamunapulse.onrender.com`) that never sleeps or expires:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/parvasheth/YamunaPulse)
+
+1. Click the **Deploy to Render** button above (or open [dashboard.render.com](https://dashboard.render.com) and sign in with GitHub).
+2. Click **New +** &rarr; **Blueprint** (or **Web Service**), and connect `parvasheth/YamunaPulse`.
+3. Click **Apply / Create Web Service**. Render builds the Docker container automatically in ~2 minutes and gives you a permanent, free 24/7 HTTPS address!
 
 ---
 

@@ -30,8 +30,10 @@ export const App: React.FC = () => {
   const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
 
-  // Live Cloudflare public tunnel URL for sharing
-  const publicShareUrl = 'https://contain-taste-regulatory-insight.trycloudflare.com';
+  // Dynamic public share URL: uses live production origin when deployed, or active tunnel fallback
+  const publicShareUrl = typeof window !== 'undefined' && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')
+    ? window.location.origin
+    : 'https://contain-taste-regulatory-insight.trycloudflare.com';
 
   const loadPasses = () => {
     fetch('/api/passes?limit=500')

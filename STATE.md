@@ -71,6 +71,10 @@ YamunaPulse is an end-to-end spatiotemporal satellite water quality & anomaly de
     - Integrated zero-credential public Cloudflare Quick Tunnel serving the full application (React SPA + FastAPI backend + DuckDB analytical engine) from one single URL.
     - Added **ShareModal** with 1-click clipboard copy, QR/mobile instructions, and permanent cloud deployment guides.
     - Script helpers (`share.ps1` and `share.bat`) for launching public tunnels anytime.
+  - **Permanent 24/7 Cloud Deployment Architecture**:
+    - Multi-stage production `Dockerfile` (Node 20 frontend build + Python 3.11 backend service) serving full stack on dynamic `$PORT`.
+    - Added `render.yaml` Blueprint specification for 1-click 24/7 deployment to Render (`https://yamunapulse.onrender.com`).
+    - Added `.dockerignore` for cloud build optimization.
   - **Full Mobile Responsiveness & Thumb-Friendly Experience**:
     - Mobile Segmented Switcher in Monitor tab (`Map View` | `Profile Chart` | `Split View`).
     - Fixed Thumb-Accessible Mobile Bottom Navigation Bar (`Monitor` | `Patterns` | `Seasonal` | `Anomalies`).
