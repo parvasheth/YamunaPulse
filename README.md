@@ -3,7 +3,7 @@
 > **Continuous Spatiotemporal Satellite Water Quality & Anomaly Detection System**  
 > 48 km multi-spectral Earth observation monitoring of the Yamuna River corridor from its Delhi entry at Palla to its exit at Asgarpur / Okhla.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-TryCloudflare-blue?style=for-the-badge&logo=cloudflare)](https://contain-taste-regulatory-insight.trycloudflare.com)
+[![Live 24/7 Web App](https://img.shields.io/badge/Live_24%2F7_Web_App-Render-46E3B7?style=for-the-badge&logo=render&logoColor=black)](https://yamunapulse.onrender.com/)
 [![Author](https://img.shields.io/badge/Author-Parva_Sheth-amber?style=for-the-badge)](https://github.com/parvasheth)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![Satellite](https://img.shields.io/badge/Earth_Observation-Sentinel--2_L2A-cyan?style=for-the-badge)](https://planetarycomputer.microsoft.com/)
@@ -13,21 +13,12 @@
 
 ---
 
-## 🌐 Live Public Access & 24/7 Deployment
+## 🌐 Live 24/7 Public Web Application
+The application is permanently deployed and accessible 24/7 on Render:  
+👉 **[https://yamunapulse.onrender.com/](https://yamunapulse.onrender.com/)**  
+*(100% free, permanent URL, zero login or credentials required — runs on desktop, tablet, and mobile).*
 
-### 1. Instant Active Live Demo (TryCloudflare Tunnel)
-Experience the live application running right now:  
-👉 **[https://contain-taste-regulatory-insight.trycloudflare.com](https://contain-taste-regulatory-insight.trycloudflare.com)**  
-*(100% free, zero login or credentials required — runs on desktop, tablet, and mobile).*
-
-### 2. Deploy 24/7 Permanent Cloud URL (Render - 100% Free Forever)
-To get a permanent, always-online URL (e.g. `https://yamunapulse.onrender.com`) that never sleeps or expires:
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/parvasheth/YamunaPulse)
-
-1. Click the **Deploy to Render** button above (or open [dashboard.render.com](https://dashboard.render.com) and sign in with GitHub).
-2. Click **New +** &rarr; **Blueprint** (or **Web Service**), and connect `parvasheth/YamunaPulse`.
-3. Click **Apply / Create Web Service**. Render builds the Docker container automatically in ~2 minutes and gives you a permanent, free 24/7 HTTPS address!
+*Local development fallback / temporary tunnel: [https://contain-taste-regulatory-insight.trycloudflare.com](https://contain-taste-regulatory-insight.trycloudflare.com)*
 
 ---
 
