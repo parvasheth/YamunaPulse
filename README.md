@@ -44,11 +44,16 @@ The application is permanently deployed and accessible 24/7 on Render:
 *In-app education explaining satellite spectral indices, river hydrodynamics, and drain pollution sources.*
 ![Field Guide](screenshots/05_glossary_modal.png)
 
-### 6. 100% Mobile Responsive Experience
-*Full mobile optimization with thumb-friendly bottom navigation, responsive Map vs Profile view toggling, and horizontal swipeable matrix grids.*
-| Mobile River Map | Mobile Longitudinal Profile |
-|:---:|:---:|
-| ![Mobile Map](screenshots/mobile_01_monitor_map.png) | ![Mobile Profile](screenshots/mobile_02_monitor_profile.png) |
+### 6. App-Like Native Mobile Pages Experience
+*Streamlined, uncluttered mobile design where every function has its own dedicated page with thumb-friendly bottom navigation, floating top date stepper, and slide-up station inspector cards.*
+
+| 🗺️ Full River Map | 📍 Station Tap Preview | 📈 48km Cascade Profile |
+|:---:|:---:|:---:|
+| ![Mobile Map](screenshots/mobile_01_map_page.png) | ![Station Card](screenshots/mobile_01b_map_station_card.png) | ![Mobile Profile](screenshots/mobile_02_profile_page.png) |
+
+| 🗓️ Pattern Matrix | 🌦️ Seasonal Hydrodynamics | 📖 Dedicated Field Guide |
+|:---:|:---:|:---:|
+| ![Pattern Matrix](screenshots/mobile_03_patterns_page.png) | ![Seasonal Engine](screenshots/mobile_04_seasonal_page.png) | ![Field Guide](screenshots/mobile_06_guide_page.png) |
 
 ---
 

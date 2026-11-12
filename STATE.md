@@ -75,12 +75,15 @@ YamunaPulse is an end-to-end spatiotemporal satellite water quality & anomaly de
     - Multi-stage production `Dockerfile` (Node 20 frontend build + Python 3.11 backend service) serving full stack on dynamic `$PORT`.
     - Added `render.yaml` Blueprint specification for 1-click 24/7 deployment to Render (`https://yamunapulse.onrender.com`).
     - Added `.dockerignore` for cloud build optimization.
-  - **Full Mobile Responsiveness & Thumb-Friendly Experience**:
-    - Mobile Segmented Switcher in Monitor tab (`Map View` | `Profile Chart` | `Split View`).
-    - Fixed Thumb-Accessible Mobile Bottom Navigation Bar (`Monitor` | `Patterns` | `Seasonal` | `Anomalies`).
-    - Horizontal scrollable touch chips for spectral metric selector and quick-jump timeline events.
-    - Touch-optimized sticky columns and swipe indicators for 2D Pattern Discovery matrices.
-    - Verified on iPhone / Android viewports (390x844) with Playwright test suite (`verify_mobile.mjs`) passing with 0 console errors.
+  - **App-Like Dedicated Mobile Pages Architecture**:
+    - Eliminated stacked header clutter: Replaced 5 stacked banner/nav bars with a sleek 50px app header (`MobileHeader`) and 36px metric selector (`MobileMetricBar`).
+    - Dedicated separate pages per function:
+      - `MobileMapPage`: Full-screen river map with floating pass date stepper (`‹ Date ›`), mini play/pause, and slide-up station detail card.
+      - `MobileProfilePage`: 48km river cascade profile chart with dedicated timeline scrubber and upstream/downstream metrics.
+      - `MobileGuidePage`: Dedicated reading page for layman science education and technology breakdown.
+      - `PatternDiscoveryMatrix`, `SeasonalComparator`, `AutomatedInsightsFeed`: Dedicated mobile full-page views with horizontal swipeable tables.
+    - Native 5-tab bottom navigation bar (`MobileBottomNav`) with high-contrast active states.
+    - Verified on iPhone / Android viewports (390x844) with Playwright test suite (`verify_mobile.mjs`) passing with 0 console errors across 8 dedicated views.
 
 - [x] **Milestone 5: End-to-End Verification & Backfill**
   - Python test suite: 11/11 tests passed (`pytest -v tests/test_pipeline.py`).

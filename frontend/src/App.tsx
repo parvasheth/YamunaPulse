@@ -11,17 +11,43 @@ import { NodeInspectorModal } from './components/NodeInspectorModal';
 import { GlossaryModal } from './components/GlossaryModal';
 import { SyncModal } from './components/SyncModal';
 import { ShareModal } from './components/ShareModal';
-import { Activity, Database, Compass, BookOpen, Users, Sparkles, Share2, Map as MapIcon, Layers, Grid, Calendar } from 'lucide-react';
+
+// Mobile-specific modular components
+import { MobileHeader } from './components/mobile/MobileHeader';
+import { MobileMetricBar } from './components/mobile/MobileMetricBar';
+import { MobileMapPage } from './components/mobile/MobileMapPage';
+import { MobileProfilePage } from './components/mobile/MobileProfilePage';
+import { MobileGuidePage } from './components/mobile/MobileGuidePage';
+import { MobileBottomNav, type MobileTabType } from './components/mobile/MobileBottomNav';
+
+import {
+  Activity,
+  Database,
+  Compass,
+  BookOpen,
+  Users,
+  Sparkles,
+  Share2,
+} from 'lucide-react';
 
 export const App: React.FC = () => {
   const [activeMetric, setActiveMetric] = useState<WaterMetric>('ndti_mean');
   const [activeTab, setActiveTab] = useState<'monitor' | 'patterns' | 'seasonal' | 'insights'>('monitor');
-  const [mobileView, setMobileView] = useState<'map' | 'profile' | 'split'>('map');
+  const [mobileTab, setMobileTab] = useState<MobileTabType | 'guide'>('map');
+  const [lastMobileTab, setLastMobileTab] = useState<MobileTabType>('map');
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 1024;
+    }
+    return false;
+  });
+
   const [nodes, setNodes] = useState<MonitoringNode[]>([]);
   const [passes, setPasses] = useState<SatellitePass[]>([]);
   const [currentPassIndex, setCurrentPassIndex] = useState<number>(0);
   const [currentProfile, setCurrentProfile] = useState<NodeObservation[]>([]);
   const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
+  const [inspectorNodeId, setInspectorNodeId] = useState<number | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(2);
   const [loading, setLoading] = useState<boolean>(true);
@@ -34,6 +60,15 @@ export const App: React.FC = () => {
   const publicShareUrl = typeof window !== 'undefined' && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')
     ? window.location.origin
     : 'https://yamunapulse.onrender.com';
+
+  // Screen size listener for dynamic mobile vs desktop mode
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const loadPasses = () => {
     fetch('/api/passes?limit=500')
@@ -99,6 +134,22 @@ export const App: React.FC = () => {
       .catch((err) => console.error('Failed to load profile for pass:', err));
   }, [currentPassIndex, passes]);
 
+  const handleMobileTabChange = (tab: MobileTabType) => {
+    setLastMobileTab(tab);
+    setMobileTab(tab);
+  };
+
+  const handleOpenMobileGuide = () => {
+    if (mobileTab !== 'guide') {
+      setLastMobileTab(mobileTab as MobileTabType);
+    }
+    setMobileTab('guide');
+  };
+
+  const handleBackFromMobileGuide = () => {
+    setMobileTab(lastMobileTab);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white space-y-3">
@@ -111,30 +162,177 @@ export const App: React.FC = () => {
     );
   }
 
+  // =========================================================================
+  // MOBILE APP EXPERIENCE (< 1024px)
+  // Dedicated, app-like pages for each function with bottom navigation bar
+  // =========================================================================
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
+        {/* Sleek App Top Header */}
+        <MobileHeader
+          visitorCount={visitorCount}
+          onOpenGuide={handleOpenMobileGuide}
+          onOpenSync={() => setIsSyncOpen(true)}
+          onOpenShare={() => setIsShareOpen(true)}
+        />
+
+        {/* Compact Spectral Metric Selector (NDTI, NDCI, DOM, NDWI) */}
+        {mobileTab !== 'guide' && (
+          <MobileMetricBar
+            activeMetric={activeMetric}
+            onMetricChange={setActiveMetric}
+          />
+        )}
+
+        {/* Main Dedicated Page Content */}
+        <main className="flex-1 w-full overflow-y-auto">
+          {/* Page 1: 🗺️ River Map */}
+          {mobileTab === 'map' && (
+            <MobileMapPage
+              observations={currentProfile}
+              passes={passes}
+              currentPassIndex={currentPassIndex}
+              onPassIndexChange={setCurrentPassIndex}
+              isPlaying={isPlaying}
+              onTogglePlay={() => setIsPlaying(!isPlaying)}
+              selectedNodeId={selectedNodeId}
+              onSelectNode={setSelectedNodeId}
+              activeMetric={activeMetric}
+              nodes={nodes}
+              onOpenInspector={(id) => setInspectorNodeId(id)}
+            />
+          )}
+
+          {/* Page 2: 📈 River Profile & Timelapse */}
+          {mobileTab === 'profile' && (
+            <MobileProfilePage
+              profile={currentProfile}
+              passes={passes}
+              currentPassIndex={currentPassIndex}
+              onPassIndexChange={setCurrentPassIndex}
+              isPlaying={isPlaying}
+              onTogglePlay={() => setIsPlaying(!isPlaying)}
+              playbackSpeed={playbackSpeed}
+              onSpeedChange={setPlaybackSpeed}
+              selectedNodeId={selectedNodeId}
+              onSelectNode={(id) => setSelectedNodeId(id)}
+              activeMetric={activeMetric}
+              onOpenInspector={(id) => setInspectorNodeId(id)}
+            />
+          )}
+
+          {/* Page 3: 🗓️ Pattern Discovery Matrix */}
+          {mobileTab === 'patterns' && (
+            <div className="p-3 pb-24 animate-in fade-in">
+              <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 mb-3">
+                <h2 className="text-sm font-bold text-white">Pattern Discovery Matrix</h2>
+                <p className="text-[11px] text-slate-400">
+                  Detect recurring weekly and monthly industrial discharges across all 18 nodes.
+                </p>
+              </div>
+              <PatternDiscoveryMatrix
+                activeMetric={activeMetric}
+                onSelectNode={(id) => setSelectedNodeId(id)}
+              />
+            </div>
+          )}
+
+          {/* Page 4: 🌦️ Seasonal Hydrodynamics */}
+          {mobileTab === 'seasonal' && (
+            <div className="p-3 pb-24 animate-in fade-in">
+              <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 mb-3">
+                <h2 className="text-sm font-bold text-white">Seasonal Hydrodynamic Engine</h2>
+                <p className="text-[11px] text-slate-400">
+                  Longitudinal comparison across Pre-Monsoon, Monsoon, Post-Monsoon, and Winter.
+                </p>
+              </div>
+              <SeasonalComparator
+                activeMetric={activeMetric}
+                onSelectNode={(id) => setSelectedNodeId(id)}
+              />
+            </div>
+          )}
+
+          {/* Page 5: 🚨 Anomalies & Discharge Feed */}
+          {mobileTab === 'anomalies' && (
+            <div className="p-3 pb-24 animate-in fade-in">
+              <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 mb-3">
+                <h2 className="text-sm font-bold text-white">Automated Anomaly & Discharge Feed</h2>
+                <p className="text-[11px] text-slate-400">
+                  Algorithmic detections of toxic spikes, bi-weekly industrial dumping, and drain steps.
+                </p>
+              </div>
+              <AutomatedInsightsFeed
+                onSelectNode={(id) => setSelectedNodeId(id)}
+              />
+            </div>
+          )}
+
+          {/* Page 6: 📖 Field Guide & Science */}
+          {mobileTab === 'guide' && (
+            <MobileGuidePage onBack={handleBackFromMobileGuide} />
+          )}
+        </main>
+
+        {/* Native-App Bottom Navigation Bar */}
+        <MobileBottomNav
+          activeTab={mobileTab === 'guide' ? lastMobileTab : mobileTab}
+          onTabChange={handleMobileTabChange}
+        />
+
+        {/* Node Inspector Modal */}
+        <NodeInspectorModal
+          nodeId={inspectorNodeId}
+          onClose={() => setInspectorNodeId(null)}
+          activeMetric={activeMetric}
+          nodes={nodes}
+        />
+
+        {/* Ingestion Orbit Sync Modal */}
+        <SyncModal
+          isOpen={isSyncOpen}
+          onClose={() => setIsSyncOpen(false)}
+          onSyncComplete={loadPasses}
+        />
+
+        {/* Share & Published Public Link Modal */}
+        <ShareModal
+          isOpen={isShareOpen}
+          onClose={() => setIsShareOpen(false)}
+          publicUrl={publicShareUrl}
+          visitorCount={visitorCount}
+        />
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // DESKTOP WORKBENCH EXPERIENCE (>= 1024px)
+  // Split-screen expansive layout with side-by-side map and analytical workbench
+  // =========================================================================
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
       {/* Top Banner: Creator Attribution & Share Shortcut */}
-      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800/80 px-3 sm:px-4 py-1.5 text-xs text-slate-400 flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
-        <div className="flex items-center space-x-2 sm:space-x-3 truncate">
-          <span className="flex items-center gap-1.5 text-amber-300 font-semibold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20 text-[11px] sm:text-xs flex-shrink-0">
+      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800/80 px-4 py-1.5 text-xs text-slate-400 flex items-center justify-between gap-2">
+        <div className="flex items-center space-x-3 truncate">
+          <span className="flex items-center gap-1.5 text-amber-300 font-semibold bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20 text-xs flex-shrink-0">
             <Sparkles className="w-3 h-3 text-amber-400" />
             Created by Parva Sheth
           </span>
-          <span className="hidden md:inline text-slate-500">&bull;</span>
-          <span className="hidden md:inline text-slate-400 truncate">
-            Sentinel-2 Spatiotemporal Satellite Water Quality & Anomaly Detection System
+          <span className="text-slate-500">&bull;</span>
+          <span className="text-slate-400 truncate">
+            Sentinel-2 Spatiotemporal Satellite Water Quality & Anomaly Detection System (Delhi 48 km)
           </span>
         </div>
-        <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-          {/* Visitor Counter */}
-          <span className="flex items-center gap-1 bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-700/60 text-slate-300 font-mono text-[11px] sm:text-xs">
+        <div className="flex items-center space-x-3 flex-shrink-0">
+          <span className="flex items-center gap-1 bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-700/60 text-slate-300 font-mono text-xs">
             <Users className="w-3 h-3 text-indigo-400" />
             <span>Visitors: {visitorCount !== null ? visitorCount.toLocaleString() : '1'}</span>
           </span>
-          {/* Share Link Shortcut */}
           <button
             onClick={() => setIsShareOpen(true)}
-            className="text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition-colors text-[11px] sm:text-xs"
+            className="text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition-colors text-xs"
           >
             <Share2 className="w-3 h-3" />
             <span>Share Link</span>
@@ -155,16 +353,16 @@ export const App: React.FC = () => {
         onOpenShare={() => setIsShareOpen(true)}
       />
 
-      {/* Main Dashboard Layout (with bottom padding for mobile bar) */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-2.5 sm:p-4 flex flex-col gap-3 sm:gap-4 pb-20 lg:pb-6">
+      {/* Main Dashboard Layout */}
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 flex flex-col gap-4 pb-6">
         {/* Tab 1: Live Split-Screen Map & Longitudinal Scrubber */}
         {activeTab === 'monitor' && (
-          <div className="flex flex-col gap-2.5 sm:gap-3 flex-1">
+          <div className="flex flex-col gap-3 flex-1">
             {/* Layman Quick Context Banner */}
-            <div className="bg-slate-900/90 border border-slate-800 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="bg-slate-900/90 border border-slate-800 rounded-xl px-4 py-2.5 flex items-center justify-between gap-2 text-xs">
               <div className="flex items-center space-x-2 min-w-0">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse flex-shrink-0"></span>
-                <span className="text-slate-300 text-[11px] sm:text-xs truncate sm:whitespace-normal">
+                <span className="text-slate-300 text-xs">
                   <strong className="text-white">Active:</strong>{' '}
                   {activeMetric === 'ndti_mean' && 'NDTI (Turbidity) — Suspended silt & municipal sewage.'}
                   {activeMetric === 'ndci_mean' && 'NDCI (Algal / Eutrophic) — Chlorophyll scum & rotting organic matter.'}
@@ -174,65 +372,17 @@ export const App: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsGlossaryOpen(true)}
-                className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition-colors text-[11px] sm:text-xs flex-shrink-0"
+                className="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition-colors text-xs flex-shrink-0"
               >
                 <BookOpen className="w-3.5 h-3.5" />
                 <span>Explain All Terms &rarr;</span>
               </button>
             </div>
 
-            {/* Mobile View Switcher (Only visible on screens < lg) */}
-            <div className="lg:hidden flex items-center p-1 bg-slate-900 border border-slate-800 rounded-xl text-xs shadow-sm">
-              <button
-                onClick={() => setMobileView('map')}
-                className={`flex-1 py-1.5 px-2 rounded-lg font-medium flex items-center justify-center gap-1.5 transition-all ${
-                  mobileView === 'map'
-                    ? 'bg-blue-600 text-white shadow font-bold'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <MapIcon className="w-3.5 h-3.5" />
-                <span>Map View</span>
-              </button>
-              <button
-                onClick={() => setMobileView('profile')}
-                className={`flex-1 py-1.5 px-2 rounded-lg font-medium flex items-center justify-center gap-1.5 transition-all ${
-                  mobileView === 'profile'
-                    ? 'bg-blue-600 text-white shadow font-bold'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <Compass className="w-3.5 h-3.5" />
-                <span>Profile Chart</span>
-              </button>
-              <button
-                onClick={() => setMobileView('split')}
-                className={`flex-1 py-1.5 px-2 rounded-lg font-medium flex items-center justify-center gap-1.5 transition-all ${
-                  mobileView === 'split'
-                    ? 'bg-blue-600 text-white shadow font-bold'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>Split View</span>
-              </button>
-            </div>
-
-            {/* Main Split Grid (Responsive behavior between mobile views and desktop) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 flex-1">
+            {/* Desktop Split Grid */}
+            <div className="grid grid-cols-12 gap-4 flex-1">
               {/* Left Column: Interactive Map */}
-              <div 
-                className={`flex flex-col transition-all ${
-                  // On Desktop: always 5 cols, 700px height
-                  'lg:col-span-5 lg:h-[700px] lg:flex ' +
-                  // On Mobile: controlled by mobileView
-                  (mobileView === 'map'
-                    ? 'h-[360px] sm:h-[440px] flex'
-                    : mobileView === 'split'
-                    ? 'h-[250px] sm:h-[300px] flex'
-                    : 'hidden')
-                }`}
-              >
+              <div className="col-span-5 h-[700px] flex flex-col">
                 <RiverMap
                   observations={currentProfile}
                   selectedNodeId={selectedNodeId}
@@ -241,18 +391,8 @@ export const App: React.FC = () => {
                 />
               </div>
 
-              {/* Right Column: Scrubber & Longitudinal Cascade Profile */}
-              <div 
-                className={`flex flex-col gap-3 sm:gap-4 ${
-                  'lg:col-span-7 lg:flex ' +
-                  (mobileView === 'map'
-                    ? 'flex' // Keep Scrubber visible below map on mobile
-                    : mobileView === 'profile' || mobileView === 'split'
-                    ? 'flex'
-                    : 'flex')
-                }`}
-              >
-                {/* Timeline Scrubber */}
+              {/* Right Column: Scrubber & Longitudinal Profile */}
+              <div className="col-span-7 flex flex-col gap-4">
                 <TimelineScrubber
                   passes={passes}
                   currentIndex={currentPassIndex}
@@ -263,19 +403,7 @@ export const App: React.FC = () => {
                   onSpeedChange={setPlaybackSpeed}
                 />
 
-                {/* Longitudinal River Profile Chart */}
-                <div 
-                  className={`flex-1 transition-all ${
-                    // On Desktop: always flex-1 min-h-[360px]
-                    'lg:min-h-[360px] lg:block ' +
-                    // On Mobile: hide if mobileView === 'map'
-                    (mobileView === 'profile'
-                      ? 'min-h-[320px] sm:min-h-[380px] block'
-                      : mobileView === 'split'
-                      ? 'min-h-[220px] sm:min-h-[260px] block'
-                      : 'hidden')
-                  }`}
-                >
+                <div className="flex-1 min-h-[360px] block">
                   <LongitudinalProfileChart
                     profile={currentProfile}
                     activeMetric={activeMetric}
@@ -285,18 +413,18 @@ export const App: React.FC = () => {
                 </div>
 
                 {/* Status Bar */}
-                <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between text-[11px] sm:text-xs text-slate-400 flex-wrap gap-2">
+                <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl px-4 py-2.5 flex items-center justify-between text-xs text-slate-400">
                   <span className="flex items-center gap-1.5">
                     <Database className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
                     <span>DuckDB: {passes.length * 18} observations</span>
                   </span>
-                  <span className="flex items-center gap-2 sm:gap-3">
+                  <span className="flex items-center gap-3">
                     <span className="flex items-center gap-1 text-amber-300 font-medium">
                       <Sparkles className="w-3 h-3 text-amber-400" />
                       Parva Sheth
                     </span>
-                    <span className="text-slate-600 hidden xs:inline">|</span>
-                    <span className="flex items-center gap-1 text-slate-400 hidden xs:flex">
+                    <span className="text-slate-600">|</span>
+                    <span className="flex items-center gap-1 text-slate-400">
                       <Compass className="w-3.5 h-3.5 text-slate-500" />
                       Tap node to inspect
                     </span>
@@ -307,7 +435,7 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* Tab 2: Pattern Discovery Matrix (Heatmaps & Cyclical Rules) */}
+        {/* Tab 2: Pattern Discovery Matrix */}
         {activeTab === 'patterns' && (
           <div className="flex-1">
             <PatternDiscoveryMatrix
@@ -327,7 +455,7 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* Tab 4: Automated Insights & Anomaly Feed */}
+        {/* Tab 4: Automated Insights Feed */}
         {activeTab === 'insights' && (
           <div className="flex-1">
             <AutomatedInsightsFeed
@@ -336,53 +464,6 @@ export const App: React.FC = () => {
           </div>
         )}
       </main>
-
-      {/* Mobile Fixed Bottom Navigation Bar (Screens < lg) */}
-      <nav data-testid="mobile-bottom-nav" className="lg:hidden fixed bottom-0 left-0 right-0 z-[999] bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-3 py-1.5 flex items-center justify-around text-[10px] font-medium shadow-2xl safe-area-bottom">
-        <button
-          data-testid="bottom-nav-monitor"
-          onClick={() => setActiveTab('monitor')}
-          className={`flex flex-col items-center gap-0.5 p-1 rounded-lg transition-all ${
-            activeTab === 'monitor' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Activity className="w-4 h-4" />
-          <span>Monitor</span>
-        </button>
-
-        <button
-          data-testid="bottom-nav-patterns"
-          onClick={() => setActiveTab('patterns')}
-          className={`flex flex-col items-center gap-0.5 p-1 rounded-lg transition-all ${
-            activeTab === 'patterns' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Grid className="w-4 h-4" />
-          <span>Patterns</span>
-        </button>
-
-        <button
-          data-testid="bottom-nav-seasonal"
-          onClick={() => setActiveTab('seasonal')}
-          className={`flex flex-col items-center gap-0.5 p-1 rounded-lg transition-all ${
-            activeTab === 'seasonal' ? 'text-cyan-400 font-bold' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Calendar className="w-4 h-4" />
-          <span>Seasonal</span>
-        </button>
-
-        <button
-          data-testid="bottom-nav-insights"
-          onClick={() => setActiveTab('insights')}
-          className={`flex flex-col items-center gap-0.5 p-1 rounded-lg transition-all ${
-            activeTab === 'insights' ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
-          }`}
-        >
-          <Sparkles className="w-4 h-4" />
-          <span>Anomalies</span>
-        </button>
-      </nav>
 
       {/* Node Inspector Modal */}
       <NodeInspectorModal
@@ -415,4 +496,5 @@ export const App: React.FC = () => {
     </div>
   );
 };
+
 export default App;

@@ -131,3 +131,31 @@ function interpolateRgb(c1: [number, number, number], c2: [number, number, numbe
   const b = Math.round(c1[2] + (c2[2] - c1[2]) * p);
   return `rgb(${r}, ${g}, ${b})`;
 }
+
+export interface LaymanRating {
+  label: string;
+  badgeClass: string;
+}
+
+export function getLaymanLabel(metric: WaterMetric, value: number): LaymanRating {
+  if (metric === 'ndti_mean') {
+    if (value < 0.08) return { label: 'Clean / Low Silt', badgeClass: 'bg-emerald-950 text-emerald-300 border border-emerald-800' };
+    if (value < 0.18) return { label: 'Fair / Moderate', badgeClass: 'bg-blue-950 text-blue-300 border border-blue-800' };
+    if (value < 0.28) return { label: 'Murky / Sewage', badgeClass: 'bg-amber-950 text-amber-300 border border-amber-800' };
+    return { label: 'Severe Sewage', badgeClass: 'bg-rose-950 text-rose-300 border border-rose-800' };
+  } else if (metric === 'ndci_mean') {
+    if (value < -0.02) return { label: 'Low Algae', badgeClass: 'bg-emerald-950 text-emerald-300 border border-emerald-800' };
+    if (value < 0.08) return { label: 'Moderate Algae', badgeClass: 'bg-blue-950 text-blue-300 border border-blue-800' };
+    if (value < 0.18) return { label: 'Algal Scum', badgeClass: 'bg-amber-950 text-amber-300 border border-amber-800' };
+    return { label: 'Hyper-Eutrophic', badgeClass: 'bg-rose-950 text-rose-300 border border-rose-800' };
+  } else if (metric === 'dom_ratio_mean') {
+    if (value < 1.05) return { label: 'Natural River', badgeClass: 'bg-emerald-950 text-emerald-300 border border-emerald-800' };
+    if (value < 1.25) return { label: 'Elevated Organics', badgeClass: 'bg-amber-950 text-amber-300 border border-amber-800' };
+    return { label: 'Industrial Dyes/Foam', badgeClass: 'bg-purple-950 text-purple-300 border border-purple-800' };
+  } else {
+    if (value < 0.20) return { label: 'Dry Sand Shoal', badgeClass: 'bg-slate-900 text-slate-300 border border-slate-700' };
+    if (value < 0.35) return { label: 'Shallow Stream', badgeClass: 'bg-cyan-950 text-cyan-300 border border-cyan-800' };
+    return { label: 'Full River Channel', badgeClass: 'bg-blue-950 text-blue-300 border border-blue-800' };
+  }
+}
+
