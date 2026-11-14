@@ -1,10 +1,11 @@
 import React from 'react';
-import type { NodeObservation, SatellitePass, WaterMetric } from '../../types';
+import type { NodeObservation, SatellitePass, WaterMetric, RiverId } from '../../types';
 import { LongitudinalProfileChart } from '../LongitudinalProfileChart';
 import { TimelineScrubber } from '../TimelineScrubber';
 import { Compass, ArrowRight } from 'lucide-react';
 
 interface MobileProfilePageProps {
+  activeRiver?: RiverId;
   profile: NodeObservation[];
   passes: SatellitePass[];
   currentPassIndex: number;
@@ -20,6 +21,7 @@ interface MobileProfilePageProps {
 }
 
 export const MobileProfilePage: React.FC<MobileProfilePageProps> = ({
+  activeRiver = 'yamuna',
   profile,
   passes,
   currentPassIndex,
@@ -33,16 +35,20 @@ export const MobileProfilePage: React.FC<MobileProfilePageProps> = ({
   activeMetric,
   onOpenInspector,
 }) => {
-  // Upstream vs Downstream stats
-  const pallaObs = profile.find((o) => o.river_km === 0);
-  const najafgarhObs = profile.find((o) => o.drain_inflow && o.drain_inflow.includes('Najafgarh'));
-  const asgarpurObs = profile.find((o) => o.river_km >= 47);
+  const isGanga = activeRiver === 'ganga';
 
-  const pallaVal = pallaObs ? ((pallaObs as any)[activeMetric] ?? 0) : 0;
-  const najafgarhVal = najafgarhObs ? ((najafgarhObs as any)[activeMetric] ?? 0) : 0;
-  const asgarpurVal = asgarpurObs ? ((asgarpurObs as any)[activeMetric] ?? 0) : 0;
+  // Entry, Breakpoint, and Exit observations
+  const entryObs = profile.find((o) => o.river_km === 0);
+  const breakpointObs = isGanga
+    ? profile.find((o) => o.drain_inflow && o.drain_inflow.includes('Jagjeetpur')) || profile.find((o) => o.node_id === 109)
+    : profile.find((o) => o.drain_inflow && o.drain_inflow.includes('Najafgarh')) || profile.find((o) => o.node_id === 5);
+  const exitObs = profile[profile.length - 1];
 
-  const spikeJumpPct = pallaVal > 0 ? Math.round(((najafgarhVal - pallaVal) / pallaVal) * 100) : 0;
+  const entryVal = entryObs ? ((entryObs as any)[activeMetric] ?? 0) : 0;
+  const bpVal = breakpointObs ? ((breakpointObs as any)[activeMetric] ?? 0) : 0;
+  const exitVal = exitObs ? ((exitObs as any)[activeMetric] ?? 0) : 0;
+
+  const spikeJumpPct = entryVal > 0 ? Math.round(((bpVal - entryVal) / entryVal) * 100) : 0;
 
   return (
     <div className="flex flex-col gap-3 p-3 max-w-full pb-20 animate-in fade-in">
@@ -51,14 +57,16 @@ export const MobileProfilePage: React.FC<MobileProfilePageProps> = ({
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold text-white flex items-center gap-1.5">
             <Compass className="w-4 h-4 text-cyan-400" />
-            <span>48 km River Cascade Profile</span>
+            <span>{isGanga ? '34 km Ganga Cascade Profile' : '48 km Yamuna Cascade Profile'}</span>
           </h2>
           <span className="text-[10px] font-mono bg-cyan-950 text-cyan-300 border border-cyan-800/60 px-2 py-0.5 rounded-full">
-            18 Stations
+            {profile.length} Stations
           </span>
         </div>
         <p className="text-[11px] text-slate-400">
-          Continuous pollution profile from Palla entry (km 0.0) downstream to Asgarpur exit (km 48.0).
+          {isGanga
+            ? 'Continuous water quality profile from Raiwala Shivalik entry (km 0.0) downstream to Balawali exit (km 34.0).'
+            : 'Continuous pollution profile from Palla entry (km 0.0) downstream to Asgarpur exit (km 48.0).'}
         </p>
       </div>
 
@@ -69,6 +77,7 @@ export const MobileProfilePage: React.FC<MobileProfilePageProps> = ({
           activeMetric={activeMetric}
           selectedNodeId={selectedNodeId}
           onSelectNode={onSelectNode}
+          activeRiver={activeRiver}
         />
       </div>
 
@@ -85,42 +94,50 @@ export const MobileProfilePage: React.FC<MobileProfilePageProps> = ({
 
       {/* Upstream vs Downstream Breakdown Cards */}
       <div className="grid grid-cols-3 gap-2">
-        {/* Palla Entry */}
+        {/* Entry */}
         <div 
-          onClick={() => pallaObs && onSelectNode(pallaObs.node_id)}
+          onClick={() => entryObs && onSelectNode(entryObs.node_id)}
           className="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 cursor-pointer hover:border-slate-700 transition-colors"
         >
-          <div className="text-[10px] text-slate-400 font-medium truncate">Entry (Palla)</div>
+          <div className="text-[10px] text-slate-400 font-medium truncate">
+            {isGanga ? 'Entry (Raiwala)' : 'Entry (Palla)'}
+          </div>
           <div className="text-xs font-bold text-emerald-400 font-mono mt-0.5">
-            {pallaVal.toFixed(3)}
+            {entryVal.toFixed(3)}
           </div>
           <div className="text-[9px] text-slate-400 mt-0.5">km 0.0 (Clean)</div>
         </div>
 
-        {/* Najafgarh Spike */}
+        {/* Major Breakpoint */}
         <div 
-          onClick={() => najafgarhObs && onSelectNode(najafgarhObs.node_id)}
+          onClick={() => breakpointObs && onSelectNode(breakpointObs.node_id)}
           className="bg-slate-900/90 border border-amber-900/40 rounded-xl p-2.5 cursor-pointer hover:border-amber-700/60 transition-colors"
         >
-          <div className="text-[10px] text-amber-300 font-medium truncate">Najafgarh Drain</div>
+          <div className="text-[10px] text-amber-300 font-medium truncate">
+            {isGanga ? 'Jagjeetpur STP' : 'Najafgarh Drain'}
+          </div>
           <div className="text-xs font-bold text-rose-400 font-mono mt-0.5">
-            {najafgarhVal.toFixed(3)}
+            {bpVal.toFixed(3)}
           </div>
           <div className="text-[9px] text-rose-300 font-bold mt-0.5">
-            +{spikeJumpPct}% Spike
+            +{spikeJumpPct}% Jump
           </div>
         </div>
 
-        {/* Asgarpur Exit */}
+        {/* Exit */}
         <div 
-          onClick={() => asgarpurObs && onSelectNode(asgarpurObs.node_id)}
+          onClick={() => exitObs && onSelectNode(exitObs.node_id)}
           className="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 cursor-pointer hover:border-slate-700 transition-colors"
         >
-          <div className="text-[10px] text-slate-400 font-medium truncate">Exit (Asgarpur)</div>
-          <div className="text-xs font-bold text-orange-400 font-mono mt-0.5">
-            {asgarpurVal.toFixed(3)}
+          <div className="text-[10px] text-slate-400 font-medium truncate">
+            {isGanga ? 'Exit (Balawali)' : 'Exit (Asgarpur)'}
           </div>
-          <div className="text-[9px] text-slate-400 mt-0.5">km 48.0 (Exit)</div>
+          <div className="text-xs font-bold text-orange-400 font-mono mt-0.5">
+            {exitVal.toFixed(3)}
+          </div>
+          <div className="text-[9px] text-slate-400 mt-0.5">
+            km {exitObs ? exitObs.river_km.toFixed(1) : (isGanga ? '34.0' : '48.0')} (Exit)
+          </div>
         </div>
       </div>
 

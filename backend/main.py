@@ -1,6 +1,7 @@
 """
 YamunaPulse Backend - FastAPI High-Performance Geospatial Analytics Service
 Serves:
+- Multi-river support: Yamuna River (Delhi 48.0 km) & Ganga River (Haridwar 34.0 km)
 - GeoJSON nodes and 150m bounding box geometries
 - Synchronized longitudinal river profiles for timelapse scrubbers
 - Multi-year spectral time series cubes (NDWI, NDTI, NDCI, DOM_Ratio)
@@ -8,6 +9,7 @@ Serves:
 - Cyclical day-of-week & nth-weekday Kruskal-Wallis anomaly detection
 - Longitudinal changepoint breakpoints
 - 2D Heatmap discovery matrices & Automated Insights feed
+- Visitor statistics & autonomous STAC ingestion
 """
 
 import os
@@ -31,8 +33,8 @@ logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(
     title="YamunaPulse API",
-    description="Spatiotemporal Satellite Water Quality & Anomaly Detection System (Delhi Yamuna)",
-    version="1.0.0"
+    description="Spatiotemporal Satellite Water Quality & Anomaly Detection System (Yamuna Delhi & Ganga Haridwar)",
+    version="2.0.0"
 )
 
 # Enable CORS for Vite frontend development and production
@@ -44,14 +46,50 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+RIVER_METADATA = {
+    "yamuna": {
+        "id": "yamuna",
+        "name": "Yamuna River",
+        "corridor": "Delhi Metropolitan Corridor",
+        "length_km": 48.0,
+        "nodes_count": 18,
+        "center": [28.67, 77.27],
+        "default_zoom": 11,
+        "baseline_reach": "Palla Baseline (km 0.0)",
+        "critical_breakpoint": "Najafgarh Drain Outfall (km 15.2)",
+        "description": "48.0 km Delhi metropolitan corridor from Palla baseline entry to Asgarpur exit, tracking 18 monitoring stations across industrial and domestic drain outfalls."
+    },
+    "ganga": {
+        "id": "ganga",
+        "name": "Ganga River",
+        "corridor": "Haridwar Foothills Corridor",
+        "length_km": 34.0,
+        "nodes_count": 14,
+        "center": [29.88, 78.19],
+        "default_zoom": 11,
+        "baseline_reach": "Raiwala Cheela Reach (km 0.0)",
+        "critical_breakpoint": "Jagjeetpur STP Outfall (km 14.2)",
+        "description": "34.0 km Haridwar foothills corridor from Raiwala Shivalik entry through Har Ki Pauri pilgrimage ghats and Jagjeetpur STP outfall to Balawali exit."
+    }
+}
+
 @app.on_event("startup")
 def startup_event():
     """Ensure database is initialized, seeded on boot, and background scheduler started."""
     init_db(DB_PATH)
-    nodes = get_all_nodes(DB_PATH)
-    if not nodes:
-        seed_nodes_from_json(db_path=DB_PATH)
-        ingest.generate_realistic_spatiotemporal_backfill(start_year=2021, end_year=2026, db_path=DB_PATH)
+    seed_nodes_from_json(db_path=DB_PATH)
+    con = get_connection(DB_PATH)
+    try:
+        y_obs = con.execute("SELECT count(*) FROM node_observations WHERE river = 'yamuna';").fetchone()[0]
+        g_obs = con.execute("SELECT count(*) FROM node_observations WHERE river = 'ganga';").fetchone()[0]
+        if y_obs == 0:
+            logger.info("Seeding Yamuna spatiotemporal backfill...")
+            ingest.generate_yamuna_spatiotemporal_backfill(db_path=DB_PATH)
+        if g_obs == 0:
+            logger.info("Seeding Ganga spatiotemporal backfill...")
+            ingest.generate_ganga_spatiotemporal_backfill(db_path=DB_PATH)
+    finally:
+        con.close()
     
     # Start autonomous background satellite ingestion scheduler
     try:
@@ -59,18 +97,24 @@ def startup_event():
     except Exception as e:
         logger.warning("Could not start background scheduler: %s", e)
 
-    logger.info("YamunaPulse API ready. Connected to database with %d nodes.", len(nodes) if nodes else 18)
+    logger.info("YamunaPulse API ready with multi-river support (Yamuna & Ganga).")
+
+@app.get("/api/rivers")
+def get_rivers():
+    """Returns available river systems and corridor metadata."""
+    return list(RIVER_METADATA.values())
 
 @app.get("/api/health")
-def health():
+def health(river: str = Query("yamuna", pattern="^(yamuna|ganga)$")):
     con = get_connection(DB_PATH)
     try:
-        node_cnt = con.execute("SELECT count(*) FROM monitoring_nodes;").fetchone()[0]
-        pass_cnt = con.execute("SELECT count(*) FROM satellite_passes;").fetchone()[0]
-        obs_cnt = con.execute("SELECT count(*) FROM node_observations;").fetchone()[0]
+        node_cnt = con.execute("SELECT count(*) FROM monitoring_nodes WHERE river = ?;", [river]).fetchone()[0]
+        pass_cnt = con.execute("SELECT count(*) FROM satellite_passes WHERE river = ?;", [river]).fetchone()[0]
+        obs_cnt = con.execute("SELECT count(*) FROM node_observations WHERE river = ?;", [river]).fetchone()[0]
         return {
             "status": "healthy",
-            "system": "YamunaPulse 1.0",
+            "system": "YamunaPulse 2.0 (Multi-River)",
+            "active_river": river,
             "nodes_count": node_cnt,
             "satellite_passes_count": pass_cnt,
             "observations_count": obs_cnt,
@@ -80,9 +124,9 @@ def health():
         con.close()
 
 @app.get("/api/nodes")
-def get_nodes():
-    """Returns all 18 monitoring nodes with GeoJSON feature collection."""
-    nodes = get_all_nodes(DB_PATH)
+def get_nodes(river: str = Query("yamuna", pattern="^(yamuna|ganga)$")):
+    """Returns monitoring nodes for the specified river with GeoJSON feature collection."""
+    nodes = get_all_nodes(river=river, db_path=DB_PATH)
     features = []
     for n in nodes:
         min_lon, min_lat, max_lon, max_lat = n["bbox"]
@@ -113,30 +157,38 @@ def get_nodes():
                 "drain_impact_tier": n["drain_impact_tier"],
                 "segment": n["segment"],
                 "description": n["description"],
-                "bbox": n["bbox"]
+                "bbox": n["bbox"],
+                "river": n.get("river", river)
             }
         }
         features.append(feature)
         
+    meta = RIVER_METADATA.get(river, RIVER_METADATA["yamuna"])
     return {
         "type": "FeatureCollection",
+        "river": river,
+        "river_name": meta["name"],
+        "corridor": meta["corridor"],
+        "length_km": meta["length_km"],
+        "center": meta["center"],
+        "default_zoom": meta["default_zoom"],
         "total_nodes": len(nodes),
-        "river": "Yamuna River (Delhi Reach)",
         "features": features
     }
 
 @app.get("/api/passes")
 def get_passes(
+    river: str = Query("yamuna", pattern="^(yamuna|ganga)$"),
     limit: int = Query(500, ge=1, le=1000),
     sort: str = Query("asc", pattern="^(asc|desc)$"),
     season: Optional[str] = None,
     year: Optional[int] = None
 ):
-    """Returns satellite pass timestamps and metadata for timeline scrubber."""
+    """Returns satellite pass timestamps and metadata for timeline scrubber for the specified river."""
     con = get_connection(DB_PATH)
     try:
-        query = "SELECT pass_id, satellite, timestamp, cloud_cover_percent, scene_id, year, month, season, day_of_week, nth_weekday_of_month FROM satellite_passes WHERE 1=1"
-        params = []
+        query = "SELECT pass_id, satellite, timestamp, cloud_cover_percent, scene_id, year, month, season, day_of_week, nth_weekday_of_month, river FROM satellite_passes WHERE river = ?"
+        params = [river]
         if season:
             query += " AND season = ?"
             params.append(season)
@@ -160,9 +212,11 @@ def get_passes(
                 "month": r[6],
                 "season": r[7],
                 "day_of_week": r[8],
-                "nth_weekday_of_month": r[9]
+                "nth_weekday_of_month": r[9],
+                "river": r[10]
             })
         return {
+            "river": river,
             "total": len(passes),
             "passes": passes
         }
@@ -171,23 +225,25 @@ def get_passes(
 
 @app.get("/api/profile")
 def get_longitudinal_profile(
+    river: str = Query("yamuna", pattern="^(yamuna|ganga)$"),
     pass_id: Optional[str] = None
 ):
     """
-    Returns full longitudinal river profile (Nodes 1 to 18) for a given satellite pass.
-    If pass_id is omitted, returns latest valid pass.
+    Returns full longitudinal river profile for a given satellite pass.
+    If pass_id is omitted, returns latest valid pass for that river.
     """
     con = get_connection(DB_PATH)
     try:
         if not pass_id:
-            # Pick latest pass
-            latest_row = con.execute("SELECT pass_id FROM satellite_passes ORDER BY timestamp DESC LIMIT 1;").fetchone()
+            latest_row = con.execute(
+                "SELECT pass_id FROM satellite_passes WHERE river = ? ORDER BY timestamp DESC LIMIT 1;", [river]
+            ).fetchone()
             if not latest_row:
-                raise HTTPException(status_code=404, detail="No satellite passes found.")
+                raise HTTPException(status_code=404, detail=f"No satellite passes found for river '{river}'.")
             pass_id = latest_row[0]
             
         pass_meta = con.execute("""
-            SELECT pass_id, satellite, timestamp, cloud_cover_percent, season, day_of_week, nth_weekday_of_month
+            SELECT pass_id, satellite, timestamp, cloud_cover_percent, season, day_of_week, nth_weekday_of_month, river
             FROM satellite_passes WHERE pass_id = ?;
         """, [pass_id]).fetchone()
         
@@ -205,8 +261,9 @@ def get_longitudinal_profile(
                 o.dom_ratio_mean, o.dom_ratio_median, o.dom_ratio_p90
             FROM monitoring_nodes n
             LEFT JOIN node_observations o ON n.node_id = o.node_id AND o.pass_id = ?
+            WHERE n.river = ?
             ORDER BY n.river_km ASC;
-        """, [pass_id]).fetchall()
+        """, [pass_id, river]).fetchall()
         
         nodes_profile = []
         for r in obs_rows:
@@ -237,6 +294,7 @@ def get_longitudinal_profile(
             })
             
         return {
+            "river": river,
             "pass_info": {
                 "pass_id": pass_meta[0],
                 "satellite": pass_meta[1],
@@ -244,7 +302,8 @@ def get_longitudinal_profile(
                 "cloud_cover_percent": pass_meta[3],
                 "season": pass_meta[4],
                 "day_of_week": pass_meta[5],
-                "nth_weekday_of_month": pass_meta[6]
+                "nth_weekday_of_month": pass_meta[6],
+                "river": pass_meta[7]
             },
             "profile": nodes_profile
         }
@@ -253,12 +312,13 @@ def get_longitudinal_profile(
 
 @app.get("/api/timeseries")
 def get_timeseries(
+    river: str = Query("yamuna", pattern="^(yamuna|ganga)$"),
     node_id: Optional[int] = None,
     metric: str = Query("ndti_mean", pattern="^(ndti_mean|ndci_mean|dom_ratio_mean|ndwi_mean|active_water_pixels)$"),
     start_year: Optional[int] = None,
     end_year: Optional[int] = None
 ):
-    """Returns temporal time series for one or all nodes."""
+    """Returns temporal time series for one or all nodes along the specified river."""
     con = get_connection(DB_PATH)
     try:
         query = f"""
@@ -267,13 +327,14 @@ def get_timeseries(
                 p.season, p.day_of_week, p.nth_weekday_of_month,
                 o.{metric} as value,
                 o.cloud_shadow_fraction,
-                o.active_water_pixels
+                o.active_water_pixels,
+                o.river
             FROM node_observations o
             JOIN satellite_passes p ON o.pass_id = p.pass_id
             JOIN monitoring_nodes n ON o.node_id = n.node_id
-            WHERE o.is_valid_pass = TRUE
+            WHERE o.is_valid_pass = TRUE AND o.river = ?
         """
-        params = []
+        params = [river]
         if node_id is not None:
             query += " AND o.node_id = ?"
             params.append(node_id)
@@ -304,6 +365,7 @@ def get_timeseries(
             })
             
         return {
+            "river": river,
             "node_id": node_id,
             "metric": metric,
             "total_points": len(points),
@@ -313,49 +375,54 @@ def get_timeseries(
         con.close()
 
 @app.get("/api/analytics/seasonal")
-def get_seasonal_analytics():
+def get_seasonal_analytics(river: str = Query("yamuna", pattern="^(yamuna|ganga)$")):
     """Seasonal engine: compares Pre-Monsoon, Monsoon, Post-Monsoon, Winter."""
-    return analytics.compute_seasonal_profiles(db_path=DB_PATH)
+    return analytics.compute_seasonal_profiles(river=river, db_path=DB_PATH)
 
 @app.get("/api/analytics/cyclical")
 def get_cyclical_analytics(
+    river: str = Query("yamuna", pattern="^(yamuna|ganga)$"),
     metric: str = Query("ndti_mean", pattern="^(ndti_mean|ndci_mean|dom_ratio_mean|ndwi_mean)$")
 ):
     """Cyclical Day-of-Week & Nth-Weekday Engine with Kruskal-Wallis and Z-scores."""
-    return analytics.compute_cyclical_patterns(db_path=DB_PATH, target_metric=metric)
+    return analytics.compute_cyclical_patterns(river=river, target_metric=metric, db_path=DB_PATH)
 
 @app.get("/api/analytics/breakpoints")
 def get_spatial_breakpoints(
+    river: str = Query("yamuna", pattern="^(yamuna|ganga)$"),
     pass_id: Optional[str] = None,
     metric: str = Query("ndti_mean", pattern="^(ndti_mean|ndci_mean|dom_ratio_mean|ndwi_mean)$")
 ):
-    """Longitudinal Changepoint Detection from Node 1 to Node 18."""
-    return analytics.detect_spatial_breakpoints(db_path=DB_PATH, pass_id=pass_id, metric=metric)
+    """Longitudinal Changepoint Detection for the corridor."""
+    return analytics.detect_spatial_breakpoints(river=river, pass_id=pass_id, metric=metric, db_path=DB_PATH)
 
 @app.get("/api/analytics/heatmaps")
 def get_heatmaps(
+    river: str = Query("yamuna", pattern="^(yamuna|ganga)$"),
     metric: str = Query("ndti_mean", pattern="^(ndti_mean|ndci_mean|dom_ratio_mean|ndwi_mean)$")
 ):
     """2D Heatmap Discovery Matrix: Node vs Month, Node vs DOW, Node vs Nth-Weekday."""
-    return analytics.compute_heatmap_matrix(db_path=DB_PATH, metric=metric)
+    return analytics.compute_heatmap_matrix(river=river, metric=metric, db_path=DB_PATH)
 
 @app.get("/api/analytics/insights")
-def get_insights():
-    """Synthesized Automated Insights Feed."""
+def get_insights(river: str = Query("yamuna", pattern="^(yamuna|ganga)$")):
+    """Synthesized Automated Insights Feed for the selected river."""
     return {
-        "insights": analytics.generate_automated_insights_feed(db_path=DB_PATH)
+        "river": river,
+        "insights": analytics.generate_automated_insights_feed(river=river, db_path=DB_PATH)
     }
 
 @app.get("/api/ingest/status")
-def get_ingest_status():
+def get_ingest_status(river: str = Query("yamuna", pattern="^(yamuna|ganga)$")):
     """Returns live satellite ingestion daemon status and orbital revisit schedule."""
     con = get_connection(DB_PATH)
     try:
-        latest_pass = con.execute("SELECT MAX(timestamp) FROM satellite_passes;").fetchone()[0]
-        pass_cnt = con.execute("SELECT count(*) FROM satellite_passes;").fetchone()[0]
+        latest_pass = con.execute("SELECT MAX(timestamp) FROM satellite_passes WHERE river = ?;", [river]).fetchone()[0]
+        pass_cnt = con.execute("SELECT count(*) FROM satellite_passes WHERE river = ?;", [river]).fetchone()[0]
         next_expected = (latest_pass + timedelta(days=5)).isoformat() if latest_pass else None
         return {
             "status": "active",
+            "river": river,
             "scheduler_running": scheduler._thread.is_alive() if scheduler._thread else False,
             "orbit_frequency": "Every 5 days (Sentinel-2A/2B Twin Constellation)",
             "total_satellite_passes": pass_cnt,
@@ -368,16 +435,17 @@ def get_ingest_status():
         con.close()
 
 @app.post("/api/ingest/sync")
-def trigger_sync():
+def trigger_sync(river: str = Query("yamuna", pattern="^(yamuna|ganga)$")):
     """Triggers immediate synchronization with Microsoft Planetary Computer STAC for new Sentinel-2 passes."""
     try:
-        result = scheduler.trigger_sync()
+        result = ingest.sync_new_satellite_passes(db_path=DB_PATH, river=river)
         return result
     except Exception as e:
         logger.error("Sync trigger error: %s", e)
         raise HTTPException(status_code=500, detail=str(e))
 
 class IngestRequest(BaseModel):
+    river: str = "yamuna"
     start_date: str = "2024-01-01"
     end_date: str = "2024-03-31"
     max_cloud_cover: float = 30.0
@@ -413,4 +481,3 @@ if os.path.exists(FRONTEND_DIST):
         if os.path.exists(index_html):
             return FileResponse(index_html)
         raise HTTPException(status_code=404, detail="Frontend build not found")
-

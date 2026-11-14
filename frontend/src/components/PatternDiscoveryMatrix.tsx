@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { HeatmapMatrixResponse, WaterMetric, CyclicalRule } from '../types';
+import type { HeatmapMatrixResponse, WaterMetric, CyclicalRule, RiverId } from '../types';
 import { METRIC_CONFIGS, getMetricColor } from '../utils/metrics';
 import {
   Grid,
@@ -22,11 +22,13 @@ import {
 interface PatternDiscoveryMatrixProps {
   activeMetric: WaterMetric;
   onSelectNode: (nodeId: number) => void;
+  river?: RiverId;
 }
 
 export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
   activeMetric,
   onSelectNode,
+  river = 'yamuna',
 }) => {
   const [data, setData] = useState<HeatmapMatrixResponse | null>(null);
   const [cyclicalRules, setCyclicalRules] = useState<CyclicalRule[]>([]);
@@ -48,8 +50,8 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
     setActiveColumnIndex(null);
     setIsTourPlaying(false);
     Promise.all([
-      fetch(`/api/analytics/heatmaps?metric=${activeMetric}`).then((r) => r.json()),
-      fetch(`/api/analytics/cyclical?metric=${activeMetric}`).then((r) => r.json()),
+      fetch(`/api/analytics/heatmaps?river=${river}&metric=${activeMetric}`).then((r) => r.json()),
+      fetch(`/api/analytics/cyclical?river=${river}&metric=${activeMetric}`).then((r) => r.json()),
     ])
       .then(([heatmapRes, cyclicalRes]) => {
         setData(heatmapRes);
@@ -57,7 +59,7 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
       })
       .catch((err) => console.error('Failed to load pattern matrix:', err))
       .finally(() => setLoading(false));
-  }, [activeMetric]);
+  }, [activeMetric, river]);
 
   // Determine active columns and rows
   let columns: string[] = [];

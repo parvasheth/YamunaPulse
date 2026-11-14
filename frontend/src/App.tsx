@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import type { MonitoringNode, SatellitePass, NodeObservation, WaterMetric } from './types';
+import React, { useState, useEffect, useCallback } from 'react';
+import type { MonitoringNode, SatellitePass, NodeObservation, WaterMetric, RiverId } from './types';
+import { RIVER_CONFIGS } from './types';
 import { Navbar } from './components/Navbar';
 import { RiverMap } from './components/RiverMap';
 import { TimelineScrubber } from './components/TimelineScrubber';
@@ -31,6 +32,7 @@ import {
 } from 'lucide-react';
 
 export const App: React.FC = () => {
+  const [activeRiver, setActiveRiver] = useState<RiverId>('yamuna');
   const [activeMetric, setActiveMetric] = useState<WaterMetric>('ndti_mean');
   const [activeTab, setActiveTab] = useState<'monitor' | 'patterns' | 'seasonal' | 'insights'>('monitor');
   const [mobileTab, setMobileTab] = useState<MobileTabType | 'guide'>('map');
@@ -56,6 +58,8 @@ export const App: React.FC = () => {
   const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
   const [visitorCount, setVisitorCount] = useState<number | null>(null);
 
+  const activeRiverConfig = RIVER_CONFIGS[activeRiver];
+
   // Dynamic public share URL: uses live production origin when deployed, or active 24/7 Render URL
   const publicShareUrl = typeof window !== 'undefined' && !window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')
     ? window.location.origin
@@ -70,15 +74,15 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const loadPasses = () => {
-    fetch('/api/passes?limit=500')
+  const loadPasses = useCallback(() => {
+    fetch(`/api/passes?river=${activeRiver}&limit=500`)
       .then((r) => r.json())
       .then((data) => {
         const passList: SatellitePass[] = data.passes || [];
         setPasses(passList);
       })
       .catch((err) => console.error('Failed to load passes:', err));
-  };
+  }, [activeRiver]);
 
   // Visitor Counter Tracking: increments once per session
   useEffect(() => {
@@ -99,11 +103,15 @@ export const App: React.FC = () => {
       });
   }, []);
 
-  // Initial load: Nodes and Passes
+  // Fetch nodes & passes whenever activeRiver changes
   useEffect(() => {
+    setLoading(true);
+    setSelectedNodeId(null);
+    setInspectorNodeId(null);
+
     Promise.all([
-      fetch('/api/nodes').then((r) => r.json()),
-      fetch('/api/passes?limit=500').then((r) => r.json()),
+      fetch(`/api/nodes?river=${activeRiver}`).then((r) => r.json()),
+      fetch(`/api/passes?river=${activeRiver}&limit=500`).then((r) => r.json()),
     ])
       .then(([nodesData, passesData]) => {
         const nodeList: MonitoringNode[] = (nodesData.features || []).map((f: any) => f.properties);
@@ -111,20 +119,19 @@ export const App: React.FC = () => {
         const passList: SatellitePass[] = passesData.passes || [];
         setPasses(passList);
         if (passList.length > 0) {
-          // Default to a notable recent pass
           setCurrentPassIndex(Math.floor(passList.length * 0.75));
         }
       })
-      .catch((err) => console.error('Failed to load initial metadata:', err))
+      .catch((err) => console.error('Failed to load metadata for river:', activeRiver, err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [activeRiver]);
 
-  // Fetch longitudinal profile whenever currentPassIndex changes
+  // Fetch longitudinal profile whenever currentPassIndex or activeRiver changes
   useEffect(() => {
     if (passes.length === 0 || currentPassIndex < 0 || currentPassIndex >= passes.length) return;
 
     const pass = passes[currentPassIndex];
-    fetch(`/api/profile?pass_id=${pass.pass_id}`)
+    fetch(`/api/profile?river=${activeRiver}&pass_id=${pass.pass_id}`)
       .then((r) => r.json())
       .then((data) => {
         if (data.profile) {
@@ -132,7 +139,7 @@ export const App: React.FC = () => {
         }
       })
       .catch((err) => console.error('Failed to load profile for pass:', err));
-  }, [currentPassIndex, passes]);
+  }, [currentPassIndex, passes, activeRiver]);
 
   const handleMobileTabChange = (tab: MobileTabType) => {
     setLastMobileTab(tab);
@@ -156,8 +163,8 @@ export const App: React.FC = () => {
         <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-cyan-600 animate-pulse">
           <Activity className="w-8 h-8 text-white" />
         </div>
-        <h2 className="text-xl font-bold tracking-tight">Initializing YamunaPulse...</h2>
-        <p className="text-xs text-slate-400">Loading Delhi Yamuna STAC Cube & Analytics Engine</p>
+        <h2 className="text-xl font-bold tracking-tight">Loading {activeRiverConfig.name}...</h2>
+        <p className="text-xs text-slate-400">Loading {activeRiverConfig.corridor} STAC Cube & Analytics Engine</p>
       </div>
     );
   }
@@ -169,8 +176,10 @@ export const App: React.FC = () => {
   if (isMobile) {
     return (
       <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
-        {/* Sleek App Top Header */}
+        {/* Sleek App Top Header with River Switcher */}
         <MobileHeader
+          activeRiver={activeRiver}
+          onRiverChange={setActiveRiver}
           visitorCount={visitorCount}
           onOpenGuide={handleOpenMobileGuide}
           onOpenSync={() => setIsSyncOpen(true)}
@@ -207,6 +216,7 @@ export const App: React.FC = () => {
           {/* Page 2: 📈 River Profile & Timelapse */}
           {mobileTab === 'profile' && (
             <MobileProfilePage
+              activeRiver={activeRiver}
               profile={currentProfile}
               passes={passes}
               currentPassIndex={currentPassIndex}
@@ -228,10 +238,11 @@ export const App: React.FC = () => {
               <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3 mb-3">
                 <h2 className="text-sm font-bold text-white">Pattern Discovery Matrix</h2>
                 <p className="text-[11px] text-slate-400">
-                  Detect recurring weekly and monthly industrial discharges across all 18 nodes.
+                  Detect recurring weekly and monthly industrial and seasonal discharges across all {nodes.length} stations.
                 </p>
               </div>
               <PatternDiscoveryMatrix
+                river={activeRiver}
                 activeMetric={activeMetric}
                 onSelectNode={(id) => setSelectedNodeId(id)}
               />
@@ -248,6 +259,7 @@ export const App: React.FC = () => {
                 </p>
               </div>
               <SeasonalComparator
+                river={activeRiver}
                 activeMetric={activeMetric}
                 onSelectNode={(id) => setSelectedNodeId(id)}
               />
@@ -264,6 +276,7 @@ export const App: React.FC = () => {
                 </p>
               </div>
               <AutomatedInsightsFeed
+                river={activeRiver}
                 onSelectNode={(id) => setSelectedNodeId(id)}
               />
             </div>
@@ -283,6 +296,7 @@ export const App: React.FC = () => {
 
         {/* Node Inspector Modal */}
         <NodeInspectorModal
+          river={activeRiver}
           nodeId={inspectorNodeId}
           onClose={() => setInspectorNodeId(null)}
           activeMetric={activeMetric}
@@ -322,7 +336,7 @@ export const App: React.FC = () => {
           </span>
           <span className="text-slate-500">&bull;</span>
           <span className="text-slate-400 truncate">
-            Sentinel-2 Spatiotemporal Satellite Water Quality & Anomaly Detection System (Delhi 48 km)
+            Sentinel-2 Spatiotemporal Satellite Water Quality & Anomaly Detection System ({activeRiverConfig.corridor})
           </span>
         </div>
         <div className="flex items-center space-x-3 flex-shrink-0">
@@ -340,8 +354,10 @@ export const App: React.FC = () => {
         </div>
       </div>
 
-      {/* Navigation Header */}
+      {/* Navigation Header with River Switcher */}
       <Navbar
+        activeRiver={activeRiver}
+        onRiverChange={setActiveRiver}
         activeMetric={activeMetric}
         onMetricChange={setActiveMetric}
         activeTab={activeTab}
@@ -363,10 +379,10 @@ export const App: React.FC = () => {
               <div className="flex items-center space-x-2 min-w-0">
                 <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse flex-shrink-0"></span>
                 <span className="text-slate-300 text-xs">
-                  <strong className="text-white">Active:</strong>{' '}
-                  {activeMetric === 'ndti_mean' && 'NDTI (Turbidity) — Suspended silt & municipal sewage.'}
+                  <strong className="text-white">Active ({activeRiverConfig.shortName}):</strong>{' '}
+                  {activeMetric === 'ndti_mean' && 'NDTI (Turbidity) — Suspended silt & wastewater sludge.'}
                   {activeMetric === 'ndci_mean' && 'NDCI (Algal / Eutrophic) — Chlorophyll scum & rotting organic matter.'}
-                  {activeMetric === 'dom_ratio_mean' && 'DOM / Dye Ratio — Detergent surfactants & textile dyes.'}
+                  {activeMetric === 'dom_ratio_mean' && 'DOM / Dye Ratio — Detergent surfactants & industrial dyes.'}
                   {activeMetric === 'ndwi_mean' && 'NDWI (Water Channel) — Flow channel width vs sand shoals.'}
                 </span>
               </div>
@@ -409,6 +425,7 @@ export const App: React.FC = () => {
                     activeMetric={activeMetric}
                     selectedNodeId={selectedNodeId}
                     onSelectNode={(id) => setSelectedNodeId(id)}
+                    activeRiver={activeRiver}
                   />
                 </div>
 
@@ -416,7 +433,7 @@ export const App: React.FC = () => {
                 <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl px-4 py-2.5 flex items-center justify-between text-xs text-slate-400">
                   <span className="flex items-center gap-1.5">
                     <Database className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
-                    <span>DuckDB: {passes.length * 18} observations</span>
+                    <span>DuckDB: {passes.length * nodes.length} observations ({activeRiverConfig.shortName})</span>
                   </span>
                   <span className="flex items-center gap-3">
                     <span className="flex items-center gap-1 text-amber-300 font-medium">
@@ -439,6 +456,7 @@ export const App: React.FC = () => {
         {activeTab === 'patterns' && (
           <div className="flex-1">
             <PatternDiscoveryMatrix
+              river={activeRiver}
               activeMetric={activeMetric}
               onSelectNode={(id) => setSelectedNodeId(id)}
             />
@@ -449,6 +467,7 @@ export const App: React.FC = () => {
         {activeTab === 'seasonal' && (
           <div className="flex-1">
             <SeasonalComparator
+              river={activeRiver}
               activeMetric={activeMetric}
               onSelectNode={(id) => setSelectedNodeId(id)}
             />
@@ -459,6 +478,7 @@ export const App: React.FC = () => {
         {activeTab === 'insights' && (
           <div className="flex-1">
             <AutomatedInsightsFeed
+              river={activeRiver}
               onSelectNode={(id) => setSelectedNodeId(id)}
             />
           </div>
@@ -467,6 +487,7 @@ export const App: React.FC = () => {
 
       {/* Node Inspector Modal */}
       <NodeInspectorModal
+        river={activeRiver}
         nodeId={selectedNodeId}
         onClose={() => setSelectedNodeId(null)}
         activeMetric={activeMetric}

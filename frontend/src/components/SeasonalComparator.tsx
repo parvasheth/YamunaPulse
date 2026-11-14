@@ -10,30 +10,34 @@ import {
   Legend,
   ReferenceLine,
 } from 'recharts';
-import type { SeasonalResponse, WaterMetric } from '../types';
+import type { SeasonalResponse, WaterMetric, RiverId } from '../types';
 import { METRIC_CONFIGS } from '../utils/metrics';
 import { Calendar, Sun, CloudRain, Wind, Snowflake } from 'lucide-react';
 
 interface SeasonalComparatorProps {
   activeMetric: WaterMetric;
   onSelectNode: (nodeId: number) => void;
+  river?: RiverId;
 }
 
 export const SeasonalComparator: React.FC<SeasonalComparatorProps> = ({
   activeMetric,
   onSelectNode,
+  river = 'yamuna',
 }) => {
   const [data, setData] = useState<SeasonalResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const metricConfig = METRIC_CONFIGS[activeMetric];
+  const isGanga = river === 'ganga';
 
   useEffect(() => {
-    fetch('/api/analytics/seasonal')
+    setLoading(true);
+    fetch(`/api/analytics/seasonal?river=${river}`)
       .then((r) => r.json())
       .then((res) => setData(res))
       .catch((err) => console.error('Failed to load seasonal data:', err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [river]);
 
   if (loading || !data) {
     return (
@@ -137,7 +141,9 @@ export const SeasonalComparator: React.FC<SeasonalComparatorProps> = ({
           <span>
             Longitudinal Profile by Season: <span className="text-cyan-400">{metricConfig.shortName}</span>
           </span>
-          <span className="text-[10px] text-slate-500 font-mono">Palla (km 0) &rarr; Asgarpur (km 48)</span>
+          <span className="text-[10px] text-slate-500 font-mono">
+            {isGanga ? 'Raiwala (km 0) \u2192 Balawali (km 34)' : 'Palla (km 0) \u2192 Asgarpur (km 48)'}
+          </span>
         </h4>
 
         <div className="w-full h-72">

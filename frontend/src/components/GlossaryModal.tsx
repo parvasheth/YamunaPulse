@@ -105,10 +105,13 @@ export const GlossaryModal: React.FC<GlossaryModalProps> = ({ isOpen, onClose })
                   What is the YamunaPulse Project?
                 </h3>
                 <p className="text-slate-300 leading-relaxed">
-                  The <strong>Yamuna River</strong> enters the National Capital Territory of Delhi at <strong>Palla (km 0.0)</strong> as relatively clean Himalayan water. Over the next <strong>48 kilometers</strong>, it passes through 18 critical monitoring sites where massive city drains pour untreated domestic wastewater, industrial chemicals, and factory dyes into the stream. By the time it exits Delhi at <strong>Asgarpur (km 48.0)</strong>, it has become one of the most polluted river stretches in the world.
+                  The <strong>Yamuna River</strong> enters Delhi at <strong>Palla (km 0.0)</strong> as relatively clean water. Over the next <strong>48 kilometers</strong>, it passes through 18 critical monitoring sites where massive city drains pour untreated domestic wastewater, industrial chemicals, and factory dyes into the stream.
                 </p>
                 <p className="text-slate-300 leading-relaxed">
-                  <strong>YamunaPulse</strong> monitors this entire 48 km stretch from space using the European Space Agency's <strong>Sentinel-2 satellites</strong>. Every 5 days as the satellite passes over Delhi, it photographs the river across multiple light frequencies (visible green, red, red-edge, and near-infrared). YamunaPulse reads these images to measure pollution without needing expensive physical water testing boats.
+                  YamunaPulse now also monitors the <strong>Ganga River (Haridwar Corridor, 34.0 km)</strong> from its Himalayan exit at <strong>Raiwala (km 0.0)</strong> past the sacred <strong>Har Ki Pauri</strong> ghats, Kassaban nullah, and <strong>Jagjeetpur STP (km 14.2)</strong> down to Balawali bridge (km 34.0).
+                </p>
+                <p className="text-slate-300 leading-relaxed">
+                  <strong>YamunaPulse</strong> monitors both river stretches from space using the European Space Agency's <strong>Sentinel-2 satellites</strong>. Every 5 days as the satellite passes over, it photographs the river across multiple light frequencies (visible green, red, red-edge, and near-infrared). YamunaPulse reads these images to measure water quality without needing expensive physical water testing boats.
                 </p>
               </div>
 

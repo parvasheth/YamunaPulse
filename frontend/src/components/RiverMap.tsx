@@ -95,6 +95,19 @@ export const RiverMap: React.FC<RiverMapProps> = ({
     newTileLayer.bringToBack();
   }, [basemap]);
 
+  // Auto-fit map bounds when observations change or when river is switched
+  const prevFirstNodeRef = useRef<number | null>(null);
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || observations.length === 0) return;
+    const firstId = observations[0].node_id;
+    if (prevFirstNodeRef.current !== firstId) {
+      prevFirstNodeRef.current = firstId;
+      const bounds = L.latLngBounds(observations.map((o) => [o.latitude, o.longitude]));
+      map.fitBounds(bounds, { padding: [35, 35], maxZoom: 13 });
+    }
+  }, [observations]);
+
   // Update Markers, Polygons, and River Polyline when observations or metric changes
   useEffect(() => {
     const map = mapInstanceRef.current;

@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
-import type { MonitoringNode, WaterMetric } from '../types';
+import type { MonitoringNode, WaterMetric, RiverId } from '../types';
 import { METRIC_CONFIGS } from '../utils/metrics';
 import { X, MapPin, AlertTriangle, TrendingUp } from 'lucide-react';
 
@@ -18,6 +18,7 @@ interface NodeInspectorModalProps {
   onClose: () => void;
   activeMetric: WaterMetric;
   nodes: MonitoringNode[];
+  river?: RiverId;
 }
 
 export const NodeInspectorModal: React.FC<NodeInspectorModalProps> = ({
@@ -25,6 +26,7 @@ export const NodeInspectorModal: React.FC<NodeInspectorModalProps> = ({
   onClose,
   activeMetric,
   nodes,
+  river = 'yamuna',
 }) => {
   const [timeseriesData, setTimeseriesData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -35,7 +37,7 @@ export const NodeInspectorModal: React.FC<NodeInspectorModalProps> = ({
   useEffect(() => {
     if (!nodeId) return;
     setLoading(true);
-    fetch(`/api/timeseries?node_id=${nodeId}&metric=${activeMetric}`)
+    fetch(`/api/timeseries?river=${river}&node_id=${nodeId}&metric=${activeMetric}`)
       .then((r) => r.json())
       .then((res) => {
         const formatted = (res.data || []).map((pt: any) => ({
@@ -49,7 +51,7 @@ export const NodeInspectorModal: React.FC<NodeInspectorModalProps> = ({
       })
       .catch((err) => console.error('Failed to load node timeseries:', err))
       .finally(() => setLoading(false));
-  }, [nodeId, activeMetric]);
+  }, [nodeId, activeMetric, river]);
 
   if (!nodeId || !node) return null;
 

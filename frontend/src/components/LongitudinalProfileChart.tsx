@@ -10,7 +10,7 @@ import {
   ReferenceLine,
   ReferenceDot,
 } from 'recharts';
-import type { NodeObservation, WaterMetric } from '../types';
+import type { NodeObservation, WaterMetric, RiverId } from '../types';
 import { METRIC_CONFIGS } from '../utils/metrics';
 import { AlertCircle, ArrowDownRight, Compass } from 'lucide-react';
 
@@ -19,6 +19,7 @@ interface LongitudinalProfileChartProps {
   activeMetric: WaterMetric;
   selectedNodeId: number | null;
   onSelectNode: (nodeId: number) => void;
+  activeRiver?: RiverId;
 }
 
 export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> = ({
@@ -26,8 +27,10 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
   activeMetric,
   selectedNodeId,
   onSelectNode,
+  activeRiver = 'yamuna',
 }) => {
   const metricConfig = METRIC_CONFIGS[activeMetric];
+  const isGanga = activeRiver === 'ganga';
 
   const chartData = profile.map((obs) => {
     const val = (obs as any)[activeMetric] ?? 0;
@@ -95,7 +98,11 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
           <div className="flex items-center space-x-2 flex-wrap">
             <h3 className="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5">
               <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 flex-shrink-0" />
-              <span>Spatial Profile (Palla &rarr; Asgarpur)</span>
+              <span>
+                {isGanga
+                  ? 'Spatial Profile (Raiwala \u2192 Balawali, 34 km)'
+                  : 'Spatial Profile (Palla \u2192 Asgarpur, 48 km)'}
+              </span>
             </h3>
             {selectedPoint && (
               <span className="text-[10px] sm:text-xs text-amber-300 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800/60 font-medium">
@@ -104,7 +111,9 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
             )}
           </div>
           <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 hidden xs:block">
-            Watch pollution surge at Najafgarh and Barapullah drain outfalls.
+            {isGanga
+              ? 'Observe water quality transitions past Har Ki Pauri ghats, Jagjeetpur STP, and SIIDCUL canal.'
+              : 'Watch pollution surge at Najafgarh and Barapullah drain outfalls.'}
           </p>
         </div>
 
@@ -116,7 +125,7 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
           </span>
           <span className="flex items-center gap-1 text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800/60">
             <ArrowDownRight className="w-3 h-3" />
-            <span>Drains</span>
+            <span>Key Landmarks</span>
           </span>
         </div>
       </div>
@@ -134,8 +143,8 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
           >
             <defs>
               <linearGradient id="metricGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.6} />
-                <stop offset="95%" stopColor="#0284c7" stopOpacity={0.05} />
+                <stop offset="5%" stopColor={isGanga ? '#10b981' : '#38bdf8'} stopOpacity={0.6} />
+                <stop offset="95%" stopColor={isGanga ? '#0d9488' : '#0284c7'} stopOpacity={0.05} />
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
@@ -146,7 +155,9 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
               tickLine={false}
               unit=" km"
               label={{
-                value: 'Downstream River Distance (km from Palla)',
+                value: isGanga
+                  ? 'Downstream River Distance (km from Raiwala)'
+                  : 'Downstream River Distance (km from Palla)',
                 position: 'insideBottom',
                 offset: -10,
                 fill: '#94a3b8',
@@ -170,17 +181,29 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
               strokeWidth={1.5}
             />
 
-            {/* Major Drain Inflows Reference Lines */}
-            <ReferenceLine x={16.5} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Najafgarh (km 16.5)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
-            <ReferenceLine x={26.5} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Delhi Gate (km 26.5)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
-            <ReferenceLine x={30.5} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Barapullah (km 30.5)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
-            <ReferenceLine x={40.0} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Shahdara (km 40.0)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
+            {/* River Specific Landmark & Drain Inflow Lines */}
+            {isGanga ? (
+              <>
+                <ReferenceLine x={5.4} stroke="#06b6d4" strokeDasharray="3 3" label={{ value: 'Har Ki Pauri (km 5.4)', fill: '#22d3ee', fontSize: 10, position: 'top' }} />
+                <ReferenceLine x={8.1} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Kassaban (km 8.1)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
+                <ReferenceLine x={14.2} stroke="#f43f5e" strokeDasharray="3 3" label={{ value: 'Jagjeetpur STP (km 14.2)', fill: '#fb7185', fontSize: 10, position: 'top' }} />
+                <ReferenceLine x={19.2} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'SIIDCUL (km 19.2)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
+                <ReferenceLine x={28.5} stroke="#eab308" strokeDasharray="3 3" label={{ value: 'Laksar Sugar (km 28.5)', fill: '#fde047', fontSize: 10, position: 'top' }} />
+              </>
+            ) : (
+              <>
+                <ReferenceLine x={16.5} stroke="#f43f5e" strokeDasharray="3 3" label={{ value: 'Najafgarh (km 16.5)', fill: '#fb7185', fontSize: 10, position: 'top' }} />
+                <ReferenceLine x={26.5} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Delhi Gate (km 26.5)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
+                <ReferenceLine x={30.5} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Barapullah (km 30.5)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
+                <ReferenceLine x={40.0} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Shahdara (km 40.0)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
+              </>
+            )}
 
             {/* Active profile area */}
             <Area
               type="monotone"
               dataKey="value"
-              stroke="#38bdf8"
+              stroke={isGanga ? '#10b981' : '#38bdf8'}
               strokeWidth={2.5}
               fillOpacity={1}
               fill="url(#metricGradient)"

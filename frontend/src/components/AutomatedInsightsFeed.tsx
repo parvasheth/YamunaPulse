@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { AutomatedInsight } from '../types';
+import type { AutomatedInsight, RiverId } from '../types';
 import {
   Sparkles,
   AlertOctagon,
@@ -11,19 +11,24 @@ import {
 
 interface AutomatedInsightsFeedProps {
   onSelectNode?: (nodeId: number) => void;
+  river?: RiverId;
 }
 
-export const AutomatedInsightsFeed: React.FC<AutomatedInsightsFeedProps> = () => {
+export const AutomatedInsightsFeed: React.FC<AutomatedInsightsFeedProps> = ({
+  onSelectNode: _onSelectNode,
+  river = 'yamuna',
+}) => {
   const [insights, setInsights] = useState<AutomatedInsight[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/analytics/insights')
+    setLoading(true);
+    fetch(`/api/analytics/insights?river=${river}`)
       .then((r) => r.json())
       .then((data) => setInsights(data.insights || []))
       .catch((err) => console.error('Failed to load insights feed:', err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [river]);
 
   if (loading) {
     return (

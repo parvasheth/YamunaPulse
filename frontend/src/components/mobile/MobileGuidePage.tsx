@@ -199,35 +199,74 @@ export const MobileGuidePage: React.FC<MobileGuidePageProps> = ({ onBack }) => {
         </div>
       )}
 
-      {/* Section 3: Delhi Drains & Reaches */}
+      {/* Section 3: Corridors & Reaches */}
       {activeSection === 'reaches' && (
         <div className="space-y-3">
+          {/* Delhi Yamuna */}
           <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-2">
-            <h3 className="text-sm font-bold text-white">The Anatomy of Delhi Yamuna</h3>
+            <h3 className="text-sm font-bold text-cyan-400">1. Delhi Yamuna Corridor (48.0 km)</h3>
             <p className="text-xs text-slate-300 leading-relaxed">
-              Delhi represents only <strong>2% of the Yamuna's total length</strong>, yet contributes nearly <strong>80% of its total pollution load</strong>.
+              Delhi represents only <strong>2% of the Yamuna's length</strong>, yet contributes nearly <strong>80% of its total pollution load</strong>.
             </p>
           </div>
 
           <div className="space-y-2 text-xs">
             <div className="bg-emerald-950/30 border border-emerald-800/50 rounded-xl p-3 space-y-1">
-              <div className="font-bold text-emerald-400">Reach 1: Entry & Upper Reach (km 0.0 to 15.0)</div>
+              <div className="font-bold text-emerald-400">Yamuna Reach 1: Pristine Entry (km 0.0 to 15.0)</div>
               <p className="text-slate-300">
-                From Palla to Wazirabad Barrage. Water is relatively clean (NDTI ~0.04). Drinking water is extracted for Delhi at Wazirabad.
+                From Palla to Wazirabad Barrage. Cold baseline runoff (NDTI ~0.04). Drinking water is extracted for Delhi at Wazirabad before zero base-flow release downstream.
               </p>
             </div>
 
             <div className="bg-rose-950/30 border border-rose-800/50 rounded-xl p-3 space-y-1">
-              <div className="font-bold text-rose-400">Reach 2: The Toxic Urban Core (km 16.5 to 35.0)</div>
+              <div className="font-bold text-rose-400">Yamuna Reach 2: Urban Collapse (km 16.5 to 35.0)</div>
               <p className="text-slate-300">
-                Begins with the catastrophic inflow of the <strong>Najafgarh Drain at km 16.5</strong>, which single-handedly dumps ~70% of Delhi's untreated wastewater, causing a <strong>+533% turbidity step-jump</strong>. Followed by Delhi Gate and Barapullah drains.
+                Begins with the catastrophic inflow of the <strong>Najafgarh Drain at km 16.5</strong>, dumping &gt;60% of Delhi's wastewater (+533% turbidity step-jump), followed by Delhi Gate and Barapullah drains.
               </p>
             </div>
 
             <div className="bg-amber-950/30 border border-amber-800/50 rounded-xl p-3 space-y-1">
-              <div className="font-bold text-amber-400">Reach 3: Okhla & Exit Reach (km 36.0 to 48.0)</div>
+              <div className="font-bold text-amber-400">Yamuna Reach 3: Okhla Frothing & Exit (km 36.0 to 48.0)</div>
               <p className="text-slate-300">
-                Water hits Okhla Barrage and Kalindi Kunj, where drop-structures create churning that whips detergent surfactants into floating toxic foam, before flowing past Shahdara Drain into Uttar Pradesh.
+                Water hits Okhla Barrage and Kalindi Kunj, where drop-structures whip surfactant-laden effluents into floating toxic foam, before flowing past Shahdara Drain into Uttar Pradesh.
+              </p>
+            </div>
+          </div>
+
+          {/* Haridwar Ganga */}
+          <div className="bg-slate-900/90 border border-emerald-900/50 rounded-xl p-3.5 space-y-2 mt-4">
+            <h3 className="text-sm font-bold text-emerald-400">2. Haridwar Ganga Corridor (34.0 km)</h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Tracking the holy Ganga from its Himalayan mountain exit at Rajaji National Park through the sacred pilgrimage center and industrial plains.
+            </p>
+          </div>
+
+          <div className="space-y-2 text-xs">
+            <div className="bg-emerald-950/30 border border-emerald-800/50 rounded-xl p-3 space-y-1">
+              <div className="font-bold text-emerald-400">Ganga Reach 1: Himalayan Foothills (km 0.0 to 4.5)</div>
+              <p className="text-slate-300">
+                Raiwala and Bhimgoda Barrage: Crystal-clear cold snowmelt with ultra-low non-monsoon turbidity (NDTI ~0.03). High water clarity and gravelly boulder bed.
+              </p>
+            </div>
+
+            <div className="bg-cyan-950/30 border border-cyan-800/50 rounded-xl p-3 space-y-1">
+              <div className="font-bold text-cyan-400">Ganga Reach 2: Pilgrimage Core & Ghats (km 5.4 to 10.5)</div>
+              <p className="text-slate-300">
+                <strong>Har Ki Pauri (km 5.4)</strong>: Holy bathing epicenter where weekend and festival crowds generate distinct organic load pulses (DOM ratio surges +35%), followed by Kassaban nullah drainage.
+              </p>
+            </div>
+
+            <div className="bg-rose-950/30 border border-rose-800/50 rounded-xl p-3 space-y-1">
+              <div className="font-bold text-rose-400">Ganga Reach 3: Jagjeetpur STP & SIIDCUL (km 14.2 to 23.0)</div>
+              <p className="text-slate-300">
+                <strong>Jagjeetpur STP (km 14.2)</strong>: Major municipal outfall (68 + 27 MLD) causing the river's primary step-jump. Followed by <strong>SIIDCUL canal (km 19.2)</strong> with cyclical mid-week industrial batch discharges.
+              </p>
+            </div>
+
+            <div className="bg-amber-950/30 border border-amber-800/50 rounded-xl p-3 space-y-1">
+              <div className="font-bold text-amber-400">Ganga Reach 4: Laksar Sugar Mills & Exit (km 28.5 to 34.0)</div>
+              <p className="text-slate-300">
+                Agro-industrial sugarcane crushing season (Nov–March) surges organic effluents into the Laksar drain before the river exits Haridwar at Balawali Bridge.
               </p>
             </div>
           </div>

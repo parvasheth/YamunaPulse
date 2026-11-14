@@ -1,9 +1,12 @@
 import React from 'react';
-import type { WaterMetric } from '../types';
+import type { WaterMetric, RiverId } from '../types';
 import { METRIC_CONFIGS } from '../utils/metrics';
+import { RiverSwitcher } from './RiverSwitcher';
 import { Activity, Satellite, Waves, Grid, Sparkles, Calendar, BookOpen, Users, Share2, ShieldCheck } from 'lucide-react';
 
 interface NavbarProps {
+  activeRiver: RiverId;
+  onRiverChange: (river: RiverId) => void;
   activeMetric: WaterMetric;
   onMetricChange: (metric: WaterMetric) => void;
   activeTab: 'monitor' | 'patterns' | 'seasonal' | 'insights';
@@ -16,6 +19,8 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
+  activeRiver,
+  onRiverChange,
   activeMetric,
   onMetricChange,
   activeTab,
@@ -26,14 +31,20 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenSync,
   onOpenShare,
 }) => {
+  const isGanga = activeRiver === 'ganga';
+
   return (
     <header className="bg-slate-900/95 backdrop-blur border-b border-slate-800 text-white sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2 sm:py-2.5 flex flex-col gap-2">
         {/* Main Header Bar */}
-        <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+        <div className="flex items-center justify-between gap-3 flex-wrap lg:flex-nowrap">
           {/* Brand & Author */}
           <div className="flex items-center space-x-2.5 min-w-0">
-            <div className="relative flex-shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-cyan-600 via-blue-500 to-indigo-600 shadow-md shadow-cyan-500/20">
+            <div className={`relative flex-shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl shadow-md ${
+              isGanga
+                ? 'bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-600 shadow-emerald-500/20'
+                : 'bg-gradient-to-tr from-cyan-600 via-blue-500 to-indigo-600 shadow-cyan-500/20'
+            }`}>
               <Waves className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 sm:h-3 sm:w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -46,8 +57,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <h1 className="text-base sm:text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-cyan-300 bg-clip-text text-transparent truncate">
                   YamunaPulse
                 </h1>
-                <span className="px-1.5 py-0.5 text-[10px] sm:text-xs font-semibold rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800/60 flex-shrink-0">
-                  Delhi 48 km
+                <span className={`px-1.5 py-0.5 text-[10px] sm:text-xs font-semibold rounded-full flex-shrink-0 border ${
+                  isGanga
+                    ? 'bg-emerald-950 text-emerald-300 border-emerald-800/60'
+                    : 'bg-cyan-950 text-cyan-400 border border-cyan-800/60'
+                }`}>
+                  {isGanga ? 'Haridwar 34 km' : 'Delhi 48 km'}
                 </span>
                 <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/40 shadow-sm flex-shrink-0">
                   <span className="text-slate-400 hidden xs:inline">By</span>
@@ -56,12 +71,19 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
               <p className="text-[10px] sm:text-xs text-slate-400 flex items-center gap-1 truncate hidden sm:flex">
                 <Satellite className="w-3 h-3 text-cyan-400 flex-shrink-0" />
-                <span>Sentinel-2 L2A &bull; 18 Nodes (Palla to Asgarpur) &bull; {passCount} passes</span>
+                <span>
+                  Sentinel-2 L2A &bull; {isGanga ? '14 Nodes (Raiwala to Balawali)' : '18 Nodes (Palla to Asgarpur)'} &bull; {passCount} passes
+                </span>
               </p>
             </div>
           </div>
 
-          {/* Desktop Navigation Tabs (Hidden on small screens, accessible via bottom bar) */}
+          {/* Prominent River Corridor Switcher */}
+          <div className="flex-shrink-0">
+            <RiverSwitcher activeRiver={activeRiver} onChange={onRiverChange} />
+          </div>
+
+          {/* Desktop Navigation Tabs */}
           <nav className="hidden lg:flex items-center space-x-1 bg-slate-950/70 p-1 rounded-xl border border-slate-800">
             <button
               onClick={() => onTabChange('monitor')}

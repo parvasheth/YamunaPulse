@@ -1,5 +1,53 @@
 export type WaterMetric = 'ndti_mean' | 'ndci_mean' | 'dom_ratio_mean' | 'ndwi_mean';
 
+export type RiverId = 'yamuna' | 'ganga';
+
+export interface RiverConfig {
+  id: RiverId;
+  name: string;
+  shortName: string;
+  corridor: string;
+  length_km: number;
+  nodes_count: number;
+  center: [number, number];
+  default_zoom: number;
+  baseline_reach: string;
+  critical_breakpoint: string;
+  description: string;
+  icon: string;
+}
+
+export const RIVER_CONFIGS: Record<RiverId, RiverConfig> = {
+  yamuna: {
+    id: 'yamuna',
+    name: 'Yamuna River',
+    shortName: 'Yamuna (Delhi)',
+    corridor: 'Delhi 48.0 km Corridor',
+    length_km: 48.0,
+    nodes_count: 18,
+    center: [28.67, 77.27],
+    default_zoom: 11,
+    baseline_reach: 'Palla (km 0.0)',
+    critical_breakpoint: 'Najafgarh Drain (km 15.2)',
+    description: '48.0 km Delhi metropolitan corridor from Palla baseline entry to Asgarpur exit, tracking 18 monitoring stations across industrial and domestic drain outfalls.',
+    icon: '🌊'
+  },
+  ganga: {
+    id: 'ganga',
+    name: 'Ganga River',
+    shortName: 'Ganga (Haridwar)',
+    corridor: 'Haridwar 34.0 km Corridor',
+    length_km: 34.0,
+    nodes_count: 14,
+    center: [29.88, 78.19],
+    default_zoom: 11,
+    baseline_reach: 'Raiwala / Cheela (km 0.0)',
+    critical_breakpoint: 'Jagjeetpur STP (km 14.2)',
+    description: '34.0 km Haridwar foothills corridor from Raiwala Shivalik entry through Har Ki Pauri pilgrimage ghats and Jagjeetpur STP outfall to Balawali exit.',
+    icon: '🏔️'
+  }
+};
+
 export interface MonitoringNode {
   node_id: number;
   name: string;
@@ -11,6 +59,7 @@ export interface MonitoringNode {
   segment: string;
   description: string;
   bbox: [number, number, number, number];
+  river?: RiverId;
 }
 
 export interface SatellitePass {
@@ -24,6 +73,7 @@ export interface SatellitePass {
   season: 'Pre-Monsoon' | 'Monsoon' | 'Post-Monsoon' | 'Winter';
   day_of_week: string;
   nth_weekday_of_month: string;
+  river?: RiverId;
 }
 
 export interface NodeObservation {
@@ -50,9 +100,11 @@ export interface NodeObservation {
   dom_ratio_mean: number;
   dom_ratio_median: number;
   dom_ratio_p90: number;
+  river?: RiverId;
 }
 
 export interface LongitudinalProfileResponse {
+  river: RiverId;
   pass_info: SatellitePass;
   profile: NodeObservation[];
 }
@@ -81,6 +133,7 @@ export interface AutomatedInsight {
 }
 
 export interface HeatmapMatrixResponse {
+  river?: RiverId;
   metric: string;
   months: string[];
   days_of_week: string[];
@@ -115,6 +168,7 @@ export interface CyclicalRule {
 }
 
 export interface SeasonalResponse {
+  river?: RiverId;
   seasons: string[];
   nodes: Array<{
     node_id: number;
@@ -132,4 +186,3 @@ export interface SeasonalResponse {
     } | null>;
   }>;
 }
-

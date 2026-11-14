@@ -22,38 +22,41 @@ The application is permanently deployed and accessible 24/7 on Render:
 
 ---
 
+## 🌊🏔️ Multi-River Corridor Monitoring
+
+YamunaPulse provides seamless, one-click switching between two iconic river corridors:
+
+| River Corridor | Stretch | Extent | Stations | Key Breakpoints / Signatures |
+|:---|:---|:---:|:---:|:---|
+| **🌊 Yamuna River** | Delhi Metropolitan Reach | **48.0 km** | **18 Nodes** (Palla to Asgarpur) | Najafgarh Drain (+533% step jump), Barapullah, Kalindi Kunj toxic foam, 2nd/4th Friday industrial tank purging. |
+| **🏔️ Ganga River** | Haridwar Foothills Reach | **34.0 km** | **14 Nodes** (Raiwala to Balawali) | Har Ki Pauri weekend pilgrimage bath pulses, Jagjeetpur STP (95 MLD primary outfall), SIIDCUL industrial canal, winter sugarcane crushing at Laksar, and natural Himalayan rock-flour sediment ("matti paani"). |
+
+---
+
 ## 📸 Application Screenshots
 
-### 1. Live River Map & Longitudinal Profile
+### 1. Ganga River (Haridwar 34km) Workbench & Map
+*Ganga corridor from Raiwala Shivalik mountain entry past Har Ki Pauri and Jagjeetpur STP outfall to Balawali bridge.*
+![Ganga Workbench](screenshots/desktop_01_ganga_workbench.png)
+
+### 2. Ganga Automated Anomaly & Discharge Feed
+*Detection of the Jagjeetpur STP wastewater breakpoint, SIIDCUL bi-weekly industrial dumping, weekend ritual bathing pulses, and glacial mineral rock-flour erosion.*
+![Ganga Anomalies](screenshots/desktop_02_ganga_anomalies.png)
+
+### 3. Yamuna River Live Map & Longitudinal Profile
 *Split-screen view showing 18 monitoring stations, dynamic water quality choropleths, drain outfalls, and synchronized multi-year timelapse scrubber.*
 ![Live River Monitor](screenshots/01_monitor_view.png)
 
-### 2. Pattern Discovery Matrix & Hands-on Column Tour
+### 4. Pattern Discovery Matrix & Hands-on Column Tour
 *2D multi-year heatmap matrices (`Node vs. Month`, `Node vs. Day-of-Week`, `Node vs. Nth-Weekday`) with automated scanning, layman ratings mode, and drain reach filtering.*
 ![Pattern Discovery Matrix](screenshots/02_pattern_matrix.png)
 
-### 3. Share & Instant Cloud Publishing Modal
-*Instant zero-credential public links, real-time DuckDB visitor counter, and author attribution.*
-![Share Modal](screenshots/07_share_modal.png)
+### 5. App-Like Native Mobile Pages Experience (With River Switcher)
+*Streamlined mobile design with one-tap switching between Yamuna and Ganga, dedicated pages, and bottom navigation.*
 
-### 4. Continuous Satellite Ingestion & 5-Day Orbit Sync
-*Automated daemon polling Microsoft Planetary Computer STAC for new Sentinel-2A/2B passes.*
-![Sync Modal](screenshots/06_sync_modal.png)
-
-### 5. Field Guide & Layman Glossary
-*In-app education explaining satellite spectral indices, river hydrodynamics, and drain pollution sources.*
-![Field Guide](screenshots/05_glossary_modal.png)
-
-### 6. App-Like Native Mobile Pages Experience
-*Streamlined, uncluttered mobile design where every function has its own dedicated page with thumb-friendly bottom navigation, floating top date stepper, and slide-up station inspector cards.*
-
-| 🗺️ Full River Map | 📍 Station Tap Preview | 📈 48km Cascade Profile |
+| 🗺️ Ganga River Map | 📈 Ganga 34km Profile | 🚨 Ganga Anomaly Feed |
 |:---:|:---:|:---:|
-| ![Mobile Map](screenshots/mobile_01_map_page.png) | ![Station Card](screenshots/mobile_01b_map_station_card.png) | ![Mobile Profile](screenshots/mobile_02_profile_page.png) |
-
-| 🗓️ Pattern Matrix | 🌦️ Seasonal Hydrodynamics | 📖 Dedicated Field Guide |
-|:---:|:---:|:---:|
-| ![Pattern Matrix](screenshots/mobile_03_patterns_page.png) | ![Seasonal Engine](screenshots/mobile_04_seasonal_page.png) | ![Field Guide](screenshots/mobile_06_guide_page.png) |
+| ![Mobile Ganga Map](screenshots/mobile_ganga_01_map.png) | ![Mobile Ganga Profile](screenshots/mobile_ganga_02_profile.png) | ![Mobile Ganga Anomalies](screenshots/mobile_ganga_03_anomalies.png) |
 
 ---
 

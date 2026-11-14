@@ -1,0 +1,166 @@
+{
+  "river_id": "ganga",
+  "river_name": "Ganga",
+  "stretch": "Haridwar Corridor (Raiwala to Balawali)",
+  "total_km": 34.0,
+  "datum": "WGS84",
+  "buffer_size_meters": 150,
+  "center": [29.88, 78.19],
+  "default_zoom": 11,
+  "nodes": [
+    {
+      "node_id": 101,
+      "name": "Raiwala (Cheela Reach)",
+      "river_km": 0.0,
+      "latitude": 29.9982,
+      "longitude": 78.2145,
+      "drain_inflow": null,
+      "drain_impact_tier": "baseline",
+      "segment": "Shivalik Mountain Foothills",
+      "description": "Pristine Himalayan meltwater entry from Rajaji National Park foothills upstream of urban Haridwar."
+    },
+    {
+      "node_id": 102,
+      "name": "Motichur Confluence",
+      "river_km": 2.2,
+      "latitude": 29.9805,
+      "longitude": 78.1960,
+      "drain_inflow": "Motichur Nullah",
+      "drain_impact_tier": "low",
+      "segment": "Shivalik Mountain Foothills",
+      "description": "Natural forest stream confluence with gravelly riverbed and crystal-clear mountain currents."
+    },
+    {
+      "node_id": 103,
+      "name": "Bhimgoda Barrage Upstream",
+      "river_km": 3.8,
+      "latitude": 29.9642,
+      "longitude": 78.1818,
+      "drain_inflow": null,
+      "drain_impact_tier": "low",
+      "segment": "Pondage Headworks",
+      "description": "Major barrage holding snowmelt reservoir before diversion into Upper Ganges Canal."
+    },
+    {
+      "node_id": 104,
+      "name": "Bhimgoda Barrage Spillway",
+      "river_km": 4.5,
+      "latitude": 29.9595,
+      "longitude": 78.1765,
+      "drain_inflow": null,
+      "drain_impact_tier": "moderate",
+      "segment": "Spillway Reach",
+      "description": "Regulated discharge point into the natural Ganga channel with boulder bed and high velocity."
+    },
+    {
+      "node_id": 105,
+      "name": "Har Ki Pauri (Brahmakund)",
+      "river_km": 5.4,
+      "latitude": 29.9562,
+      "longitude": 78.1708,
+      "drain_inflow": "Pilgrim Bathing Outfall",
+      "drain_impact_tier": "moderate",
+      "segment": "Pilgrimage Core Reach",
+      "description": "Holy pilgrimage ghat with mass ritual bathing, religious offerings, and daily evening Ganga Aarti crowds."
+    },
+    {
+      "node_id": 106,
+      "name": "Mayapur Headworks",
+      "river_km": 6.6,
+      "latitude": 29.9448,
+      "longitude": 78.1635,
+      "drain_inflow": null,
+      "drain_impact_tier": "low",
+      "segment": "Canal Diversion",
+      "description": "British-era canal diversion headworks feeding the Upper Ganges Canal network across western UP."
+    },
+    {
+      "node_id": 107,
+      "name": "Kassaban & Lalta Rao Outfall",
+      "river_km": 8.1,
+      "latitude": 29.9345,
+      "longitude": 78.1578,
+      "drain_inflow": "Kassaban Nullah",
+      "drain_impact_tier": "high",
+      "segment": "Urban Town Reach",
+      "description": "Municipal drainage outfall carrying untreated commercial and domestic wastewater from old Haridwar town."
+    },
+    {
+      "node_id": 108,
+      "name": "Kankhal (Daksheshwar Reach)",
+      "river_km": 10.5,
+      "latitude": 29.9215,
+      "longitude": 78.1492,
+      "drain_inflow": null,
+      "drain_impact_tier": "moderate",
+      "segment": "Heritage Ashram Reach",
+      "description": "Historic religious town reach with ashrams, temple ghats, and residential runoff."
+    },
+    {
+      "node_id": 109,
+      "name": "Jagjeetpur STP Outfall",
+      "river_km": 14.2,
+      "latitude": 29.8975,
+      "longitude": 78.1540,
+      "drain_inflow": "Jagjeetpur STP Outfall",
+      "drain_impact_tier": "critical",
+      "segment": "Central Discharge Reach",
+      "description": "Haridwar's primary wastewater discharge zone (68 MLD + 27 MLD STP facility) entering the main stem."
+    },
+    {
+      "node_id": 110,
+      "name": "Matri Sadan / Sitarampur",
+      "river_km": 16.5,
+      "latitude": 29.8802,
+      "longitude": 78.1610,
+      "drain_inflow": null,
+      "drain_impact_tier": "moderate",
+      "segment": "Braided Riverbed Reach",
+      "description": "Ecological conservation reach where river widens into braided gravel and sand channels."
+    },
+    {
+      "node_id": 111,
+      "name": "SIIDCUL Industrial Canal",
+      "river_km": 19.2,
+      "latitude": 29.8615,
+      "longitude": 78.1712,
+      "drain_inflow": "SIIDCUL Effluent Drain",
+      "drain_impact_tier": "high",
+      "segment": "Industrial Drainage Reach",
+      "description": "Confluence of industrial drainage carrying treated effluents from pharmaceutical and engineering manufacturing units."
+    },
+    {
+      "node_id": 112,
+      "name": "Sultanpur Floodplain Reach",
+      "river_km": 23.0,
+      "latitude": 29.8320,
+      "longitude": 78.1885,
+      "drain_inflow": null,
+      "drain_impact_tier": "low",
+      "segment": "Agricultural Plain",
+      "description": "Broad agricultural floodplain reach with seasonal sandbanks and farming runoff."
+    },
+    {
+      "node_id": 113,
+      "name": "Laksar Agro-Sugar Reach",
+      "river_km": 28.5,
+      "latitude": 29.7915,
+      "longitude": 78.2160,
+      "drain_inflow": "Laksar Drain",
+      "drain_impact_tier": "moderate",
+      "segment": "Agro-Industrial Reach",
+      "description": "Sub-catchment receiving seasonal sugarcane crushing and processing wastewater during winter months."
+    },
+    {
+      "node_id": 114,
+      "name": "Balawali Bridge (District Exit)",
+      "river_km": 34.0,
+      "latitude": 29.7085,
+      "longitude": 78.2675,
+      "drain_inflow": "Solani Confluence",
+      "drain_impact_tier": "baseline",
+      "segment": "Plains Exit Reach",
+      "description": "Corridor exit point at the railway bridge near UP border; Solani river confluence downstream."
+    }
+  ]
+}
