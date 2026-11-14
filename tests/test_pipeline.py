@@ -263,3 +263,25 @@ def test_seasonal_baseline_comparison_and_algae_cross_check():
         assert "seasonal_z_score" in a0
         assert "algae_cross_check" in a0
         assert "water_mask" in a0
+
+def test_api_heatmap_matrix_years():
+    """Verify Multi-Year (2021 to current) Heatmap Matrix calculation and trends."""
+    res_y = client.get("/api/analytics/heatmaps?river=yamuna&metric=ndti_mean")
+    assert res_y.status_code == 200
+    data_y = res_y.json()
+    assert "years" in data_y
+    assert data_y["years"] == ["2021", "2022", "2023", "2024", "2025", "2026"]
+    assert "node_vs_year" in data_y
+    assert len(data_y["node_vs_year"]) == 18
+    node0 = data_y["node_vs_year"][0]
+    assert len(node0["values"]) == 6
+    assert "delta_since_start" in node0
+    assert "trend_status" in node0
+    assert node0["trend_status"] in ["improved", "degraded", "stable"]
+
+    res_g = client.get("/api/analytics/heatmaps?river=ganga&metric=ndti_mean")
+    assert res_g.status_code == 200
+    data_g = res_g.json()
+    assert "years" in data_g
+    assert data_g["years"] == ["2021", "2022", "2023", "2024", "2025", "2026"]
+    assert len(data_g["node_vs_year"]) == 14

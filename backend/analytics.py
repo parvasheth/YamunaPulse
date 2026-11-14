@@ -821,6 +821,50 @@ def compute_heatmap_matrix(
             val = nth_pivot.loc[nid, nw] if (nid in nth_pivot.index and nw in nth_pivot.columns) else None
             row["values"].append(round(float(val), 4) if pd.notna(val) else None)
         nth_grid.append(row)
+
+    # 4. Node vs Year (Annual Multi-Year Trajectory 2021 to Current)
+    available_years = sorted(df["year"].dropna().unique().astype(int).tolist())
+    year_labels = [str(y) for y in available_years]
+    year_pivot = df.pivot_table(index="node_id", columns="year", values=metric, aggfunc="mean")
+    year_grid = []
+    first_year = available_years[0] if available_years else 2021
+    latest_year = available_years[-1] if available_years else 2026
+
+    for _, n in unique_nodes.iterrows():
+        nid = int(n["node_id"])
+        row = {
+            "node_id": nid,
+            "node_name": n["node_name"],
+            "river_km": float(n["river_km"]),
+            "values": []
+        }
+        val_first = None
+        val_latest = None
+        for y in available_years:
+            val = year_pivot.loc[nid, y] if (nid in year_pivot.index and y in year_pivot.columns) else None
+            val_clean = round(float(val), 4) if pd.notna(val) else None
+            row["values"].append(val_clean)
+            if y == first_year and val_clean is not None:
+                val_first = val_clean
+            if y == latest_year and val_clean is not None:
+                val_latest = val_clean
+
+        if val_first is not None and val_latest is not None:
+            delta = round(val_latest - val_first, 4)
+            pct_change = round(((val_latest - val_first) / max(0.001, abs(val_first))) * 100, 1)
+            if metric == "ndwi_mean":
+                status = "improved" if delta > 0.02 else ("degraded" if delta < -0.02 else "stable")
+            else:
+                status = "improved" if delta < -0.02 else ("degraded" if delta > 0.02 else "stable")
+        else:
+            delta = 0.0
+            pct_change = 0.0
+            status = "stable"
+
+        row["delta_since_start"] = delta
+        row["pct_change"] = pct_change
+        row["trend_status"] = status
+        year_grid.append(row)
         
     return {
         "river": riv,
@@ -828,7 +872,9 @@ def compute_heatmap_matrix(
         "months": months,
         "days_of_week": dows,
         "nth_weekdays": key_nth,
+        "years": year_labels,
         "node_vs_month": month_grid,
         "node_vs_dow": dow_grid,
-        "node_vs_nth_weekday": nth_grid
+        "node_vs_nth_weekday": nth_grid,
+        "node_vs_year": year_grid
     }

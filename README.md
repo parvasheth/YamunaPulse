@@ -48,8 +48,8 @@ YamunaPulse provides seamless, one-click switching between two iconic river corr
 ![Live River Monitor](screenshots/01_monitor_view.png)
 
 ### 4. Pattern Discovery Matrix & Hands-on Column Tour
-*2D multi-year heatmap matrices (`Node vs. Month`, `Node vs. Day-of-Week`, `Node vs. Nth-Weekday`) with automated scanning, layman ratings mode, and drain reach filtering.*
-![Pattern Discovery Matrix](screenshots/02_pattern_matrix.png)
+*2D multi-year heatmap matrices (`Year to Year [2021–Current]`, `Node vs. Month`, `Node vs. Day-of-Week`, `Node vs. Nth-Weekday`) with 5-year trajectory tracking (improved/degraded/stable), automated scanning, layman ratings mode, and drain reach filtering.*
+![Pattern Discovery Matrix](screenshots/desktop_05_yamuna_year_matrix.png)
 
 ### 5. App-Like Native Mobile Pages Experience (With River Switcher)
 *Streamlined mobile design with one-tap switching between Yamuna and Ganga, dedicated pages, and bottom navigation.*

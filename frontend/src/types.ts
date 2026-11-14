@@ -166,6 +166,7 @@ export interface HeatmapMatrixResponse {
   months: string[];
   days_of_week: string[];
   nth_weekdays: string[];
+  years: string[];
   node_vs_month: Array<{
     node_id: number;
     node_name: string;
@@ -183,6 +184,15 @@ export interface HeatmapMatrixResponse {
     node_name: string;
     river_km: number;
     values: (number | null)[];
+  }>;
+  node_vs_year: Array<{
+    node_id: number;
+    node_name: string;
+    river_km: number;
+    values: (number | null)[];
+    delta_since_start?: number;
+    pct_change?: number;
+    trend_status?: 'improved' | 'degraded' | 'stable';
   }>;
 }
 

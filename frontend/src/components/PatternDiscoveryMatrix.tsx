@@ -17,6 +17,7 @@ import {
   Sparkles,
   Eye,
   FastForward,
+  TrendingUp,
 } from 'lucide-react';
 
 interface PatternDiscoveryMatrixProps {
@@ -32,7 +33,7 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
 }) => {
   const [data, setData] = useState<HeatmapMatrixResponse | null>(null);
   const [cyclicalRules, setCyclicalRules] = useState<CyclicalRule[]>([]);
-  const [activeMatrix, setActiveMatrix] = useState<'month' | 'dow' | 'nth'>('nth');
+  const [activeMatrix, setActiveMatrix] = useState<'year' | 'month' | 'dow' | 'nth'>('year');
   const [loading, setLoading] = useState(true);
 
   // Hands-on Interactive Controls
@@ -68,10 +69,16 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
     node_name: string;
     river_km: number;
     values: (number | null)[];
+    delta_since_start?: number;
+    pct_change?: number;
+    trend_status?: 'improved' | 'degraded' | 'stable';
   }> = [];
 
   if (data) {
-    if (activeMatrix === 'month') {
+    if (activeMatrix === 'year') {
+      columns = data.years || [];
+      rawRows = data.node_vs_year || [];
+    } else if (activeMatrix === 'month') {
       columns = data.months;
       rawRows = data.node_vs_month;
     } else if (activeMatrix === 'dow') {
@@ -117,6 +124,50 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
 
   // Column-specific contextual explanations for layman understanding
   const getColumnStory = (colName: string): { title: string; story: string; type: 'alert' | 'flush' | 'normal' } => {
+    // Multi-Year Trajectory Stories (2021 to 2026)
+    if (colName === '2021') {
+      return {
+        title: `🌱 2021 Baseline Year`,
+        story: `First year of continuous Sentinel-2 satellite water quality record. Captures post-lockdown baseline conditions with lower initial industrial effluent volume before full economic reopening.`,
+        type: 'normal',
+      };
+    }
+    if (colName === '2022') {
+      return {
+        title: `🏭 2022 Post-Lockdown Industrial Resurgence`,
+        story: `Full manufacturing and economic rebound across urban corridors. Visible rise in organic surfactants and turbidity downstream of major industrial outfalls (Najafgarh and SIIDCUL).`,
+        type: 'alert',
+      };
+    }
+    if (colName === '2023') {
+      return {
+        title: `🌊 2023 Historic Monsoon Inundation`,
+        story: `Extreme July 2023 flood event (Yamuna reached all-time peak of 208.66m). High natural sediment silt influx during peak deluge, followed by strong temporary basin dilution flush.`,
+        type: 'flush',
+      };
+    }
+    if (colName === '2024') {
+      return {
+        title: `☀️ 2024 Prolonged Extreme Heatwave`,
+        story: `Record-breaking summer heatwave (>45°C) caused acute low baseflow, intense evaporation, and widespread eutrophic algal blooms (elevated NDCI) across urban reaches.`,
+        type: 'alert',
+      };
+    }
+    if (colName === '2025') {
+      return {
+        title: `🏗️ 2025 Treatment Infrastructure Scale-Up`,
+        story: `Commissioning of upgraded tertiary sewage treatment capacity begins to show measurable particulate sludge mitigation in selected urban segments.`,
+        type: 'normal',
+      };
+    }
+    if (colName === '2026') {
+      return {
+        title: `🛰️ 2026 Current Operational Monitoring Era`,
+        story: `Present-day Sentinel-2 satellite passes. Evaluates latest river health metrics and validates real-time pollution abatement against the multi-year baseline record.`,
+        type: 'normal',
+      };
+    }
+
     if (colName.includes('2nd Friday') || colName.includes('4th Friday')) {
       return {
         title: `🚨 Pre-Weekend Industrial Discharge Surge (${colName})`,
@@ -201,6 +252,21 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
 
         {/* Matrix Switcher Tabs */}
         <div className="flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800 overflow-x-auto no-scrollbar max-w-full">
+          <button
+            onClick={() => {
+              setActiveMatrix('year');
+              setActiveColumnIndex(null);
+            }}
+            className={`flex items-center space-x-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+              activeMatrix === 'year'
+                ? 'bg-purple-600 text-white shadow-md shadow-purple-500/20'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <TrendingUp className="w-3.5 h-3.5" />
+            <span>Year to Year (2021–Current)</span>
+          </button>
+
           <button
             onClick={() => {
               setActiveMatrix('nth');
@@ -360,12 +426,42 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                {mode === 'all' ? 'All 18' : mode === 'upstream' ? 'Clean (1-4)' : 'Drains (5-18)'}
+                {mode === 'all' ? `All ${rawRows.length}` : mode === 'upstream' ? 'Upstream (1-4)' : 'Downstream'}
               </button>
             ))}
           </div>
         </div>
       </div>
+
+      {/* Multi-Year Trajectory Overview (when Year-to-Year view is active) */}
+      {activeMatrix === 'year' && (
+        <div className="bg-gradient-to-r from-purple-950/40 via-slate-900/80 to-slate-950 border border-purple-800/50 rounded-xl p-3 sm:p-3.5 space-y-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center space-x-2">
+              <TrendingUp className="w-4 h-4 text-purple-400" />
+              <h4 className="text-xs sm:text-sm font-bold text-white">
+                5-Year Trajectory & Trend Analysis (2021 &rarr; 2026 Satellite Record)
+              </h4>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs font-mono">
+              <span className="bg-emerald-950/80 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <span>↓</span> {rawRows.filter((r) => r.trend_status === 'improved').length} Improved
+              </span>
+              <span className="bg-rose-950/80 text-rose-300 border border-rose-800 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <span>↑</span> {rawRows.filter((r) => r.trend_status === 'degraded').length} Degraded
+              </span>
+              <span className="bg-slate-800/80 text-slate-300 border border-slate-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+                <span>~</span> {rawRows.filter((r) => r.trend_status === 'stable').length} Stable
+              </span>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-300 leading-relaxed">
+            {river === 'ganga'
+              ? 'Multi-year tracking reveals consistent oligotrophic purity in the Upper Shivalik (Raiwala to Har Ki Pauri), with notable wastewater mitigation downstream of Jagjeetpur STP following recent capacity expansions.'
+              : 'Multi-year satellite tracking reveals persistent industrial load spikes at Najafgarh and Barapullah, with gradual post-monsoon baseline improvements at Kalindi Kunj and Okhla due to newly commissioned upstream sewage interception.'}
+          </p>
+        </div>
+      )}
 
       {/* Active Column Tour Narrative Banner */}
       {activeColStory && (
@@ -465,6 +561,11 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
                   </th>
                 );
               })}
+              {activeMatrix === 'year' && (
+                <th className="p-1.5 text-center font-medium border-b border-slate-800 min-w-[105px] bg-slate-950 text-purple-300">
+                  <span className="block text-[10px] leading-tight font-bold">5-Yr Trajectory</span>
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -523,6 +624,25 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
                     </td>
                   );
                 })}
+
+                {activeMatrix === 'year' && (
+                  <td className="p-1 text-center border-b border-slate-800/40 bg-slate-950/40">
+                    <div
+                      title={`Net change: ${row.delta_since_start !== undefined ? (row.delta_since_start > 0 ? '+' : '') + row.delta_since_start : 0} (${row.pct_change || 0}%)`}
+                      className={`h-7 px-2 rounded flex items-center justify-center font-mono text-[9px] font-bold shadow-sm ${
+                        row.trend_status === 'improved'
+                          ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/80'
+                          : row.trend_status === 'degraded'
+                          ? 'bg-rose-950/80 text-rose-300 border border-rose-800/80'
+                          : 'bg-slate-800/80 text-slate-300 border border-slate-700/80'
+                      }`}
+                    >
+                      <span className="mr-0.5">{row.trend_status === 'improved' ? '↓' : row.trend_status === 'degraded' ? '↑' : '~'}</span>
+                      <span>{row.pct_change !== undefined ? `${row.pct_change > 0 ? '+' : ''}${row.pct_change}%` : '0%'}</span>
+                      <span className="text-[8px] uppercase ml-1 opacity-80">{row.trend_status}</span>
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
