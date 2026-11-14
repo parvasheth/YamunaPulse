@@ -212,7 +212,6 @@ export const SeasonalComparator: React.FC<SeasonalComparatorProps> = ({
                 stroke="#f59e0b"
                 strokeWidth={2}
                 dot={{ r: 3 }}
-                isAnimationActive={false}
               />
               <Line
                 type="monotone"
@@ -221,7 +220,6 @@ export const SeasonalComparator: React.FC<SeasonalComparatorProps> = ({
                 stroke="#3b82f6"
                 strokeWidth={2.5}
                 dot={{ r: 3 }}
-                isAnimationActive={false}
               />
               <Line
                 type="monotone"
@@ -230,7 +228,6 @@ export const SeasonalComparator: React.FC<SeasonalComparatorProps> = ({
                 stroke="#10b981"
                 strokeWidth={2}
                 dot={{ r: 3 }}
-                isAnimationActive={false}
               />
               <Line
                 type="monotone"
@@ -239,7 +236,6 @@ export const SeasonalComparator: React.FC<SeasonalComparatorProps> = ({
                 stroke="#06b6d4"
                 strokeWidth={2.5}
                 dot={{ r: 3 }}
-                isAnimationActive={false}
               />
             </LineChart>
           </ResponsiveContainer>

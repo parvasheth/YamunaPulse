@@ -131,13 +131,10 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
               <Compass className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-400 flex-shrink-0" />
               <span>
                 {isGanga
-                  ? 'Spatial Profile Along River (Raiwala → Balawali, 34 km)'
-                  : 'Spatial Profile Along River (Palla → Asgarpur, 48 km)'}
+                  ? 'Spatial Profile (Raiwala \u2192 Balawali, 34 km)'
+                  : 'Spatial Profile (Palla \u2192 Asgarpur, 48 km)'}
               </span>
             </h3>
-            <span className="text-[10px] bg-slate-800 text-cyan-300 border border-slate-700 px-2 py-0.5 rounded-full font-mono">
-              Spatial Snapshot (X = River km, not time)
-            </span>
             {selectedPoint && (
               <span className="text-[10px] sm:text-xs text-amber-300 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800/60 font-medium">
                 N{selectedPoint.node_id} ({selectedPoint.name})
@@ -228,7 +225,7 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
               </>
             )}
 
-            {/* Active profile area - isAnimationActive=false ensures rock-solid static rendering without tween wobble */}
+            {/* Active profile area */}
             <Area
               type="monotone"
               dataKey="value"
@@ -236,7 +233,6 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
               strokeWidth={2.5}
               fillOpacity={1}
               fill="url(#metricGradient)"
-              isAnimationActive={false}
             />
 
             {/* Selected Node Reference Dot */}
