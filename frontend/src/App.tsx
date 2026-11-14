@@ -375,26 +375,29 @@ export const App: React.FC = () => {
   // =========================================================================
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
-      {/* Top Banner: Creator Attribution & Share Shortcut */}
-      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800/80 px-4 py-1.5 text-xs text-slate-400 flex items-center justify-between gap-2">
-        <div className="flex items-center space-x-3 truncate">
-          <span className="flex items-center gap-1.5 text-amber-300 font-semibold bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20 text-xs flex-shrink-0">
+      {/* Top Banner: Creator Attribution & Project Title */}
+      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800/80 px-4 py-1.5 text-xs text-slate-400 flex items-center justify-between gap-3">
+        <div className="flex items-center space-x-2.5 sm:space-x-3 flex-wrap">
+          <span className="flex items-center gap-1.5 text-amber-300 font-semibold bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-500/20 text-xs flex-shrink-0 whitespace-nowrap">
             <Sparkles className="w-3 h-3 text-amber-400" />
             Created by Parva Sheth
           </span>
-          <span className="text-slate-500">&bull;</span>
-          <span className="text-slate-400 truncate">
-            Sentinel-2 Spatiotemporal Satellite Water Quality & Anomaly Detection System ({activeRiverConfig.corridor})
+          <span className="text-slate-600 hidden sm:inline">&bull;</span>
+          <span className="text-slate-300 font-medium whitespace-nowrap hidden sm:inline">
+            YamunaPulse &bull; Sentinel-2 Spatiotemporal Satellite Water Quality System
+          </span>
+          <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800/60 hidden md:inline-block flex-shrink-0 whitespace-nowrap">
+            {activeRiverConfig.corridor}
           </span>
         </div>
-        <div className="flex items-center space-x-3 flex-shrink-0">
-          <span className="flex items-center gap-1 bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-700/60 text-slate-300 font-mono text-xs">
+        <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+          <span className="flex items-center gap-1 bg-slate-800/60 px-2 py-0.5 rounded-md border border-slate-700/60 text-slate-300 font-mono text-xs whitespace-nowrap">
             <Users className="w-3 h-3 text-indigo-400" />
             <span>Visitors: {visitorCount !== null ? visitorCount.toLocaleString() : '1'}</span>
           </span>
           <button
             onClick={() => setIsShareOpen(true)}
-            className="text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition-colors text-xs"
+            className="text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition-colors text-xs whitespace-nowrap"
           >
             <Share2 className="w-3 h-3" />
             <span>Share Link</span>

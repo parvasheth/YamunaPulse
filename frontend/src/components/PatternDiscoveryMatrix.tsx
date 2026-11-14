@@ -235,18 +235,18 @@ export const PatternDiscoveryMatrix: React.FC<PatternDiscoveryMatrixProps> = ({
     <div className="bg-slate-900/90 border border-slate-800 backdrop-blur rounded-xl p-4 shadow-xl space-y-4">
       {/* Top Header & Matrix Mode Selector */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
-        <div>
-          <div className="flex items-center space-x-2">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
+        <div className="flex-1 min-w-[280px]">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2 whitespace-nowrap flex-shrink-0">
               <Grid className="w-5 h-5 text-cyan-400" />
               Pattern Discovery Matrix
             </h3>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800/60">
+            <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800/60 whitespace-nowrap flex-shrink-0">
               Interactive Hands-On Explorer ({cyclicalRules.length} Statistical Rules)
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Detects weekly factory purge schedules, seasonal monsoon washouts, and spatial drain impacts across 426 satellite passes.
+            Detects multi-year trajectories (2021–current), weekly factory purge schedules, seasonal monsoon washouts, and spatial drain impacts across 426 satellite passes.
           </p>
         </div>
 
