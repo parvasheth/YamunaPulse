@@ -69,10 +69,12 @@ export const RiverMap: React.FC<RiverMapProps> = ({
     const markersGroup = L.layerGroup().addTo(map);
     markersLayerRef.current = markersGroup;
     mapInstanceRef.current = map;
+    (window as any)._leafletMap = map;
 
     return () => {
       map.remove();
       mapInstanceRef.current = null;
+      delete (window as any)._leafletMap;
     };
   }, []);
 
