@@ -11,7 +11,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import type { SeasonalResponse, WaterMetric, RiverId } from '../types';
-import { METRIC_CONFIGS } from '../utils/metrics';
+import { METRIC_CONFIGS, formatLocationLabel } from '../utils/metrics';
 import { Calendar, Sun, CloudRain, Wind, Snowflake } from 'lucide-react';
 
 interface SeasonalComparatorProps {
@@ -50,9 +50,11 @@ export const SeasonalComparator: React.FC<SeasonalComparatorProps> = ({
   // Format data for Recharts
   const chartData = data.nodes.map((node) => {
     const sData = node.seasonal_data;
+    const location_label = formatLocationLabel(node.name, node.river_km);
     return {
       node_id: node.node_id,
       name: node.name,
+      location_label,
       river_km: parseFloat(node.river_km.toFixed(1)),
       drain_inflow: node.drain_inflow,
       pre_monsoon: sData['Pre-Monsoon'] ? (sData['Pre-Monsoon'] as any)[activeMetric] : null,
@@ -146,11 +148,11 @@ export const SeasonalComparator: React.FC<SeasonalComparatorProps> = ({
           </span>
         </h4>
 
-        <div className="w-full h-72">
+        <div className="w-full h-80 sm:h-96">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={chartData}
-              margin={{ top: 10, right: 25, left: -10, bottom: 20 }}
+              margin={{ top: 10, right: 25, left: -10, bottom: 25 }}
               onClick={(e: any) => {
                 if (e && e.activePayload && e.activePayload.length) {
                   onSelectNode(e.activePayload[0].payload.node_id);
@@ -159,17 +161,15 @@ export const SeasonalComparator: React.FC<SeasonalComparatorProps> = ({
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
               <XAxis
-                dataKey="river_km"
+                dataKey="location_label"
                 stroke="#64748b"
-                fontSize={11}
-                unit=" km"
-                label={{
-                  value: 'River Distance (km)',
-                  position: 'insideBottom',
-                  offset: -10,
-                  fill: '#94a3b8',
-                  fontSize: 11,
-                }}
+                fontSize={10}
+                tickLine={false}
+                interval={0}
+                angle={-45}
+                textAnchor="end"
+                height={75}
+                tick={{ fill: '#94a3b8', fontSize: 10 }}
               />
               <YAxis
                 stroke="#64748b"
@@ -187,10 +187,23 @@ export const SeasonalComparator: React.FC<SeasonalComparatorProps> = ({
               />
               <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: '10px', fontSize: '11px' }} />
 
-              {/* Major Drain Inflows Reference Lines */}
-              <ReferenceLine x={16.5} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Najafgarh', fill: '#fb923c', fontSize: 10, position: 'top' }} />
-              <ReferenceLine x={26.5} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Delhi Gate', fill: '#fb923c', fontSize: 10, position: 'top' }} />
-              <ReferenceLine x={40.0} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Shahdara', fill: '#fb923c', fontSize: 10, position: 'top' }} />
+              {/* Major Inflows & Landmark Reference Guide Lines */}
+              {isGanga ? (
+                <>
+                  <ReferenceLine x="Har Ki Pauri (5.4km)" stroke="#06b6d4" strokeDasharray="3 3" />
+                  <ReferenceLine x="Kassaban (8.1km)" stroke="#f97316" strokeDasharray="3 3" />
+                  <ReferenceLine x="Jagjeetpur STP (14.2km)" stroke="#f43f5e" strokeDasharray="3 3" />
+                  <ReferenceLine x="SIIDCUL (19.2km)" stroke="#f97316" strokeDasharray="3 3" />
+                  <ReferenceLine x="Laksar (28.5km)" stroke="#eab308" strokeDasharray="3 3" />
+                </>
+              ) : (
+                <>
+                  <ReferenceLine x="Najafgarh (16.5km)" stroke="#f43f5e" strokeDasharray="3 3" />
+                  <ReferenceLine x="Delhi Gate (26.5km)" stroke="#f97316" strokeDasharray="3 3" />
+                  <ReferenceLine x="Barapullah (30.5km)" stroke="#f97316" strokeDasharray="3 3" />
+                  <ReferenceLine x="Shahdara / Asgarpur (48km)" stroke="#f97316" strokeDasharray="3 3" />
+                </>
+              )}
 
               <Line
                 type="monotone"

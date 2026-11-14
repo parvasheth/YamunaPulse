@@ -11,7 +11,7 @@ import {
   ReferenceDot,
 } from 'recharts';
 import type { NodeObservation, WaterMetric, RiverId } from '../types';
-import { METRIC_CONFIGS } from '../utils/metrics';
+import { METRIC_CONFIGS, formatLocationLabel } from '../utils/metrics';
 import { AlertCircle, ArrowDownRight, Compass } from 'lucide-react';
 
 interface LongitudinalProfileChartProps {
@@ -34,9 +34,11 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
 
   const chartData = profile.map((obs) => {
     const val = (obs as any)[activeMetric] ?? 0;
+    const location_label = formatLocationLabel(obs.name, obs.river_km);
     return {
       node_id: obs.node_id,
       name: obs.name,
+      location_label,
       river_km: parseFloat(obs.river_km.toFixed(1)),
       value: parseFloat(val.toFixed(4)),
       drain_inflow: obs.drain_inflow,
@@ -130,11 +132,11 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
         </div>
       </div>
 
-      <div className="flex-1 w-full min-h-[200px] sm:min-h-[240px]">
+      <div className="w-full h-[280px] sm:h-[340px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={chartData}
-            margin={{ top: 10, right: 20, left: -10, bottom: 20 }}
+            margin={{ top: 10, right: 20, left: -10, bottom: 25 }}
             onClick={(e: any) => {
               if (e && e.activePayload && e.activePayload.length) {
                 onSelectNode(e.activePayload[0].payload.node_id);
@@ -149,20 +151,15 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
             <XAxis
-              dataKey="river_km"
+              dataKey="location_label"
               stroke="#64748b"
-              fontSize={11}
+              fontSize={10}
               tickLine={false}
-              unit=" km"
-              label={{
-                value: isGanga
-                  ? 'Downstream River Distance (km from Raiwala)'
-                  : 'Downstream River Distance (km from Palla)',
-                position: 'insideBottom',
-                offset: -10,
-                fill: '#94a3b8',
-                fontSize: 11,
-              }}
+              interval={0}
+              angle={-45}
+              textAnchor="end"
+              height={75}
+              tick={{ fill: '#94a3b8', fontSize: 10 }}
             />
             <YAxis
               stroke="#64748b"
@@ -181,21 +178,21 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
               strokeWidth={1.5}
             />
 
-            {/* River Specific Landmark & Drain Inflow Lines */}
+            {/* River Specific Landmark & Drain Inflow Guide Lines */}
             {isGanga ? (
               <>
-                <ReferenceLine x={5.4} stroke="#06b6d4" strokeDasharray="3 3" label={{ value: 'Har Ki Pauri (km 5.4)', fill: '#22d3ee', fontSize: 10, position: 'top' }} />
-                <ReferenceLine x={8.1} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Kassaban (km 8.1)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
-                <ReferenceLine x={14.2} stroke="#f43f5e" strokeDasharray="3 3" label={{ value: 'Jagjeetpur STP (km 14.2)', fill: '#fb7185', fontSize: 10, position: 'top' }} />
-                <ReferenceLine x={19.2} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'SIIDCUL (km 19.2)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
-                <ReferenceLine x={28.5} stroke="#eab308" strokeDasharray="3 3" label={{ value: 'Laksar Sugar (km 28.5)', fill: '#fde047', fontSize: 10, position: 'top' }} />
+                <ReferenceLine x="Har Ki Pauri (5.4km)" stroke="#06b6d4" strokeDasharray="3 3" />
+                <ReferenceLine x="Kassaban (8.1km)" stroke="#f97316" strokeDasharray="3 3" />
+                <ReferenceLine x="Jagjeetpur STP (14.2km)" stroke="#f43f5e" strokeDasharray="3 3" />
+                <ReferenceLine x="SIIDCUL (19.2km)" stroke="#f97316" strokeDasharray="3 3" />
+                <ReferenceLine x="Laksar (28.5km)" stroke="#eab308" strokeDasharray="3 3" />
               </>
             ) : (
               <>
-                <ReferenceLine x={16.5} stroke="#f43f5e" strokeDasharray="3 3" label={{ value: 'Najafgarh (km 16.5)', fill: '#fb7185', fontSize: 10, position: 'top' }} />
-                <ReferenceLine x={26.5} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Delhi Gate (km 26.5)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
-                <ReferenceLine x={30.5} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Barapullah (km 30.5)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
-                <ReferenceLine x={40.0} stroke="#f97316" strokeDasharray="3 3" label={{ value: 'Shahdara (km 40.0)', fill: '#fb923c', fontSize: 10, position: 'top' }} />
+                <ReferenceLine x="Najafgarh (16.5km)" stroke="#f43f5e" strokeDasharray="3 3" />
+                <ReferenceLine x="Delhi Gate (26.5km)" stroke="#f97316" strokeDasharray="3 3" />
+                <ReferenceLine x="Barapullah (30.5km)" stroke="#f97316" strokeDasharray="3 3" />
+                <ReferenceLine x="Shahdara / Asgarpur (48km)" stroke="#f97316" strokeDasharray="3 3" />
               </>
             )}
 
@@ -212,7 +209,7 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
             {/* Selected Node Reference Dot */}
             {selectedPoint && (
               <ReferenceDot
-                x={selectedPoint.river_km}
+                x={selectedPoint.location_label}
                 y={selectedPoint.value}
                 r={6}
                 fill="#ec4899"

@@ -159,3 +159,50 @@ export function getLaymanLabel(metric: WaterMetric, value: number): LaymanRating
   }
 }
 
+/**
+ * Formats a monitoring station name and river km into an intuitive X-axis location label
+ * e.g., "Najafgarh (16.5km)", "Har Ki Pauri (5.4km)", "Palla (0km)"
+ */
+export function formatLocationLabel(name: string, km: number): string {
+  let short = name;
+
+  // Yamuna Corridor Locations
+  if (name.includes('Palla')) short = 'Palla';
+  else if (name.includes('Jagatpur')) short = 'Jagatpur';
+  else if (name.includes('Wazirabad Barrage Upstream') || (name.includes('Wazirabad') && km <= 14.0)) short = 'Wazirabad US';
+  else if (name.includes('Wazirabad Barrage Downstream') || (name.includes('Wazirabad') && km > 14.0)) short = 'Wazirabad DS';
+  else if (name.includes('Najafgarh')) short = 'Najafgarh';
+  else if (name.includes('ISBT')) short = 'ISBT Bridge';
+  else if (name.includes('Old Railway Bridge')) short = 'Old Railway Bridge';
+  else if (name.includes('Geeta Colony')) short = 'Geeta Colony';
+  else if (name.includes('ITO')) short = 'ITO Barrage';
+  else if (name.includes('Delhi Gate')) short = 'Delhi Gate';
+  else if (name.includes('Barapullah')) short = 'Barapullah';
+  else if (name.includes('DND')) short = 'DND Flyway';
+  else if (name.includes('Okhla Barrage Upstream') || (name.includes('Okhla') && km <= 37.0)) short = 'Okhla US';
+  else if (name.includes('Kalindi Kunj')) short = 'Kalindi Kunj';
+  else if (name.includes('Okhla Barrage Downstream') || (name.includes('Okhla') && km > 37.0)) short = 'Okhla DS';
+  else if (name.includes('Jaitpur')) short = 'Jaitpur';
+  else if (name.includes('Madanpur')) short = 'Madanpur Khadar';
+  else if (name.includes('Shahdara') || name.includes('Asgarpur')) short = 'Shahdara / Asgarpur';
+  // Ganga Corridor Locations
+  else if (name.includes('Raiwala')) short = 'Raiwala';
+  else if (name.includes('Motichur')) short = 'Motichur';
+  else if (name.includes('Bhimgoda Barrage Upstream') || (name.includes('Bhimgoda') && km <= 4.0)) short = 'Bhimgoda US';
+  else if (name.includes('Bhimgoda Barrage Spillway') || (name.includes('Bhimgoda') && km > 4.0)) short = 'Bhimgoda Spill';
+  else if (name.includes('Har Ki Pauri')) short = 'Har Ki Pauri';
+  else if (name.includes('Mayapur')) short = 'Mayapur';
+  else if (name.includes('Kassaban')) short = 'Kassaban';
+  else if (name.includes('Kankhal')) short = 'Kankhal';
+  else if (name.includes('Jagjeetpur')) short = 'Jagjeetpur STP';
+  else if (name.includes('Matri Sadan')) short = 'Matri Sadan';
+  else if (name.includes('SIIDCUL')) short = 'SIIDCUL';
+  else if (name.includes('Sultanpur')) short = 'Sultanpur';
+  else if (name.includes('Laksar')) short = 'Laksar';
+  else if (name.includes('Balawali')) short = 'Balawali';
+
+  const kmStr = Number.isInteger(km) ? `${km}km` : `${km.toFixed(1)}km`;
+  return `${short} (${kmStr})`;
+}
+
+
