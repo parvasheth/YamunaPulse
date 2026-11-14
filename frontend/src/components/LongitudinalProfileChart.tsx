@@ -225,7 +225,7 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
               </>
             )}
 
-            {/* Active profile area */}
+            {/* Active profile area - isAnimationActive=false ensures the profile renders instantly at the exact static value without 1500ms tween morphing */}
             <Area
               type="monotone"
               dataKey="value"
@@ -233,6 +233,7 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
               strokeWidth={2.5}
               fillOpacity={1}
               fill="url(#metricGradient)"
+              isAnimationActive={false}
             />
 
             {/* Selected Node Reference Dot */}

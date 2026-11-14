@@ -9,6 +9,7 @@ Provides:
 
 import logging
 from typing import List, Dict, Any, Optional, Tuple
+from functools import lru_cache
 import numpy as np
 import pandas as pd
 from scipy import stats
@@ -192,6 +193,7 @@ def compute_seasonal_profiles(river: str = "yamuna", db_path: str = DB_PATH) -> 
         
     return result
 
+@lru_cache(maxsize=16)
 def compute_node_seasonal_baselines(river: str = "yamuna", db_path: str = DB_PATH) -> Dict[int, Dict[str, Any]]:
     """
     Computes historical seasonal and monthly baseline means and standard deviations
