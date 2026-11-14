@@ -13,7 +13,7 @@ interface MobileGuidePageProps {
 }
 
 export const MobileGuidePage: React.FC<MobileGuidePageProps> = ({ onBack }) => {
-  const [activeSection, setActiveSection] = useState<'basics' | 'indices' | 'reaches' | 'satellites'>('basics');
+  const [activeSection, setActiveSection] = useState<'basics' | 'indices' | 'reaches' | 'satellites' | 'science'>('basics');
 
   return (
     <div className="flex flex-col gap-3 p-3 max-w-full pb-24 animate-in fade-in text-slate-200">
@@ -88,6 +88,16 @@ export const MobileGuidePage: React.FC<MobileGuidePageProps> = ({ onBack }) => {
           }`}
         >
           4. Free Satellite Tech
+        </button>
+        <button
+          onClick={() => setActiveSection('science')}
+          className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            activeSection === 'science'
+              ? 'bg-cyan-500 text-slate-950 font-bold shadow'
+              : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'
+          }`}
+        >
+          5. Scientific QA
         </button>
       </div>
 
@@ -290,6 +300,55 @@ export const MobileGuidePage: React.FC<MobileGuidePageProps> = ({ onBack }) => {
               <li><strong>Cloud-Optimized GeoTIFFs (COG):</strong> Byte-range HTTP requests extract 150m station bounding boxes in seconds without downloading whole gigabyte scenes.</li>
               <li><strong>DuckDB:</strong> Embedded analytical columnar database providing sub-millisecond aggregation queries.</li>
             </ul>
+          </div>
+        </div>
+      )}
+
+      {/* Section 5: Scientific Rigor & QA */}
+      {activeSection === 'science' && (
+        <div className="space-y-3">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-2.5">
+            <h3 className="text-sm font-bold text-cyan-300 flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-cyan-400" />
+              5 Remote-Sensing Quality Assurance Pillars
+            </h3>
+            
+            <div className="space-y-2 text-xs">
+              <div className="bg-slate-950/70 border border-slate-800 p-2.5 rounded-lg space-y-1">
+                <span className="font-bold text-cyan-400 block">1. Dynamic Water Masking (MNDWI)</span>
+                <p className="text-slate-300">
+                  Calculates MNDWI (&gt;0) and NDWI (&gt;0.15) on every pass to trace the true flowing channel, excluding dry sandbars, mudflats, and shore weeds as river levels rise and fall.
+                </p>
+              </div>
+
+              <div className="bg-slate-950/70 border border-slate-800 p-2.5 rounded-lg space-y-1">
+                <span className="font-bold text-emerald-400 block">2. Surface Reflectance & SCL Glint Filter</span>
+                <p className="text-slate-300">
+                  Uses atmospherically corrected Sentinel-2 Level-2A (BOA) data. Sen2Cor Scene Classification Layer (SCL) filters clouds (8, 9), shadows (3), cirrus (10), and sun glint (1).
+                </p>
+              </div>
+
+              <div className="bg-slate-950/70 border border-slate-800 p-2.5 rounded-lg space-y-1">
+                <span className="font-bold text-amber-400 block">3. Clean Geometry Selection</span>
+                <p className="text-slate-300">
+                  Every 150m sampling box is placed in open channel water, offset 150m–300m away from road/rail bridge decks and weir aprons to prevent asphalt/steel spectral bias.
+                </p>
+              </div>
+
+              <div className="bg-slate-950/70 border border-slate-800 p-2.5 rounded-lg space-y-1">
+                <span className="font-bold text-purple-400 block">4. Seasonal Baseline Comparison (&Delta;NDTI)</span>
+                <p className="text-slate-300">
+                  Readings are benchmarked against historical same-season and same-month baselines via Seasonal Deltas (&Delta;NDTI) and Z-scores, avoiding misleading flat annual averages.
+                </p>
+              </div>
+
+              <div className="bg-slate-950/70 border border-slate-800 p-2.5 rounded-lg space-y-1">
+                <span className="font-bold text-rose-400 block">5. Chlorophyll-a Algae Cross-Check</span>
+                <p className="text-slate-300">
+                  NDTI is paired with chlorophyll index (NDCI). Catches masked eutrophic blooms where red light absorption (B04 dip) artificially suppresses NDTI despite heavy pollution.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       )}

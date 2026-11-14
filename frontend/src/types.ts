@@ -76,6 +76,27 @@ export interface SatellitePass {
   river?: RiverId;
 }
 
+export interface AlgaeCrossCheck {
+  status: 'ALGAE_MASKED' | 'MINERAL_SEDIMENT' | 'COMBINED_SEWAGE' | 'PRISTINE_BASEFLOW' | 'MODERATE_CHANNEL';
+  label: string;
+  severity: 'CRITICAL' | 'WARNING' | 'INFO' | 'LOW';
+  color: string;
+  explanation: string;
+}
+
+export interface WaterMaskQA {
+  active_water_pixels: number;
+  total_pixels: number;
+  water_channel_fraction: number;
+  mask_applied: string;
+}
+
+export interface CleanGeometryQA {
+  channel_clearance: string;
+  bridge_interference: string;
+  rapids_interference: string;
+}
+
 export interface NodeObservation {
   node_id: number;
   name: string;
@@ -101,6 +122,13 @@ export interface NodeObservation {
   dom_ratio_median: number;
   dom_ratio_p90: number;
   river?: RiverId;
+  // 5 Quality Assurance Scientific Pillars
+  seasonal_baseline_mean?: number;
+  seasonal_delta_ndti?: number;
+  seasonal_z_score?: number;
+  algae_cross_check?: AlgaeCrossCheck;
+  water_mask?: WaterMaskQA;
+  clean_geometry?: CleanGeometryQA;
 }
 
 export interface LongitudinalProfileResponse {

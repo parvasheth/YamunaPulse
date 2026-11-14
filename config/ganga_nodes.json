@@ -5,7 +5,10 @@
   "total_km": 34.0,
   "datum": "WGS84",
   "buffer_size_meters": 150,
-  "center": [29.88, 78.19],
+  "center": [
+    29.88,
+    78.19
+  ],
   "default_zoom": 11,
   "nodes": [
     {
@@ -17,18 +20,32 @@
       "drain_inflow": null,
       "drain_impact_tier": "baseline",
       "segment": "Shivalik Mountain Foothills",
-      "description": "Pristine Himalayan meltwater entry from Rajaji National Park foothills upstream of urban Haridwar."
+      "description": "Pristine Himalayan meltwater entry from Rajaji National Park foothills upstream of urban Haridwar.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_braided_reach",
+        "bridge_offset_meters": "None (>5km)",
+        "rapids_interference": "none_laminar_riffle",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 102,
       "name": "Motichur Confluence",
       "river_km": 2.2,
       "latitude": 29.9805,
-      "longitude": 78.1960,
+      "longitude": 78.196,
       "drain_inflow": "Motichur Nullah",
       "drain_impact_tier": "low",
       "segment": "Shivalik Mountain Foothills",
-      "description": "Natural forest stream confluence with gravelly riverbed and crystal-clear mountain currents."
+      "description": "Natural forest stream confluence with gravelly riverbed and crystal-clear mountain currents.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_confluence_reach",
+        "bridge_offset_meters": "None (>3km)",
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 103,
@@ -39,7 +56,14 @@
       "drain_inflow": null,
       "drain_impact_tier": "low",
       "segment": "Pondage Headworks",
-      "description": "Major barrage holding snowmelt reservoir before diversion into Upper Ganges Canal."
+      "description": "Major barrage holding snowmelt reservoir before diversion into Upper Ganges Canal.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_reservoir_headworks",
+        "bridge_offset_meters": 300,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 104,
@@ -50,7 +74,14 @@
       "drain_inflow": null,
       "drain_impact_tier": "moderate",
       "segment": "Spillway Reach",
-      "description": "Regulated discharge point into the natural Ganga channel with boulder bed and high velocity."
+      "description": "Regulated discharge point into the natural Ganga channel with boulder bed and high velocity.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_downstream_channel",
+        "bridge_offset_meters": 250,
+        "rapids_interference": "none_offset_from_apron",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 105,
@@ -61,7 +92,14 @@
       "drain_inflow": "Pilgrim Bathing Outfall",
       "drain_impact_tier": "moderate",
       "segment": "Pilgrimage Core Reach",
-      "description": "Holy pilgrimage ghat with mass ritual bathing, religious offerings, and daily evening Ganga Aarti crowds."
+      "description": "Holy pilgrimage ghat with mass ritual bathing, religious offerings, and daily evening Ganga Aarti crowds.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_brahmakund_channel",
+        "bridge_offset_meters": 180,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 106,
@@ -72,7 +110,14 @@
       "drain_inflow": null,
       "drain_impact_tier": "low",
       "segment": "Canal Diversion",
-      "description": "British-era canal diversion headworks feeding the Upper Ganges Canal network across western UP."
+      "description": "British-era canal diversion headworks feeding the Upper Ganges Canal network across western UP.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_diversion_reach",
+        "bridge_offset_meters": 220,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 107,
@@ -83,7 +128,14 @@
       "drain_inflow": "Kassaban Nullah",
       "drain_impact_tier": "high",
       "segment": "Urban Town Reach",
-      "description": "Municipal drainage outfall carrying untreated commercial and domestic wastewater from old Haridwar town."
+      "description": "Municipal drainage outfall carrying untreated commercial and domestic wastewater from old Haridwar town.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_town_channel",
+        "bridge_offset_meters": "None (>2km)",
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 108,
@@ -94,29 +146,50 @@
       "drain_inflow": null,
       "drain_impact_tier": "moderate",
       "segment": "Heritage Ashram Reach",
-      "description": "Historic religious town reach with ashrams, temple ghats, and residential runoff."
+      "description": "Historic religious town reach with ashrams, temple ghats, and residential runoff.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_heritage_reach",
+        "bridge_offset_meters": 200,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 109,
       "name": "Jagjeetpur STP Outfall",
       "river_km": 14.2,
       "latitude": 29.8975,
-      "longitude": 78.1540,
+      "longitude": 78.154,
       "drain_inflow": "Jagjeetpur STP Outfall",
       "drain_impact_tier": "critical",
       "segment": "Central Discharge Reach",
-      "description": "Haridwar's primary wastewater discharge zone (68 MLD + 27 MLD STP facility) entering the main stem."
+      "description": "Haridwar's primary wastewater discharge zone (68 MLD + 27 MLD STP facility) entering the main stem.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_stp_outfall_reach",
+        "bridge_offset_meters": "None (>4km)",
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 110,
       "name": "Matri Sadan / Sitarampur",
       "river_km": 16.5,
       "latitude": 29.8802,
-      "longitude": 78.1610,
+      "longitude": 78.161,
       "drain_inflow": null,
       "drain_impact_tier": "moderate",
       "segment": "Braided Riverbed Reach",
-      "description": "Ecological conservation reach where river widens into braided gravel and sand channels."
+      "description": "Ecological conservation reach where river widens into braided gravel and sand channels.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_floodplain_reach",
+        "bridge_offset_meters": "None (>3km)",
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 111,
@@ -127,29 +200,50 @@
       "drain_inflow": "SIIDCUL Effluent Drain",
       "drain_impact_tier": "high",
       "segment": "Industrial Drainage Reach",
-      "description": "Confluence of industrial drainage carrying treated effluents from pharmaceutical and engineering manufacturing units."
+      "description": "Confluence of industrial drainage carrying treated effluents from pharmaceutical and engineering manufacturing units.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_canal_confluence",
+        "bridge_offset_meters": "None (>6km)",
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 112,
       "name": "Sultanpur Floodplain Reach",
       "river_km": 23.0,
-      "latitude": 29.8320,
+      "latitude": 29.832,
       "longitude": 78.1885,
       "drain_inflow": null,
       "drain_impact_tier": "low",
       "segment": "Agricultural Plain",
-      "description": "Broad agricultural floodplain reach with seasonal sandbanks and farming runoff."
+      "description": "Broad agricultural floodplain reach with seasonal sandbanks and farming runoff.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_agricultural_reach",
+        "bridge_offset_meters": "None (>5km)",
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 113,
       "name": "Laksar Agro-Sugar Reach",
       "river_km": 28.5,
       "latitude": 29.7915,
-      "longitude": 78.2160,
+      "longitude": 78.216,
       "drain_inflow": "Laksar Drain",
       "drain_impact_tier": "moderate",
       "segment": "Agro-Industrial Reach",
-      "description": "Sub-catchment receiving seasonal sugarcane crushing and processing wastewater during winter months."
+      "description": "Sub-catchment receiving seasonal sugarcane crushing and processing wastewater during winter months.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_sugar_reach",
+        "bridge_offset_meters": "None (>4km)",
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 114,
@@ -160,8 +254,14 @@
       "drain_inflow": "Solani Confluence",
       "drain_impact_tier": "baseline",
       "segment": "Plains Exit Reach",
-      "description": "Corridor exit point at the railway bridge near UP border; Solani river confluence downstream."
+      "description": "Corridor exit point at the railway bridge near UP border; Solani river confluence downstream.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_exit_reach",
+        "bridge_offset_meters": 280,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     }
   ]
 }
-

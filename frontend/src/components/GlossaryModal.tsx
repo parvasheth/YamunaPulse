@@ -19,7 +19,7 @@ interface GlossaryModalProps {
 }
 
 export const GlossaryModal: React.FC<GlossaryModalProps> = ({ isOpen, onClose }) => {
-  const [activeCategory, setActiveCategory] = useState<'basics' | 'metrics' | 'dashboards' | 'anomalies'>('basics');
+  const [activeCategory, setActiveCategory] = useState<'basics' | 'metrics' | 'dashboards' | 'anomalies' | 'science'>('basics');
 
   if (!isOpen) return null;
 
@@ -91,6 +91,16 @@ export const GlossaryModal: React.FC<GlossaryModalProps> = ({ isOpen, onClose })
             }`}
           >
             4. Why Colors Change & Key Anomalies
+          </button>
+          <button
+            onClick={() => setActiveCategory('science')}
+            className={`px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap ${
+              activeCategory === 'science'
+                ? 'bg-cyan-500 text-slate-950 font-bold shadow'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+            }`}
+          >
+            5. Scientific Rigor & QA
           </button>
         </div>
 
@@ -363,6 +373,98 @@ export const GlossaryModal: React.FC<GlossaryModalProps> = ({ isOpen, onClose })
                   </span>
                   <p className="text-xs text-slate-300 leading-relaxed">
                     Why does the column labeled &ldquo;2nd Friday&rdquo; flash deep red? Statistical Z-score analysis ($+1.8\sigma$ anomaly, $p &lt; 0.005$) shows unauthorized factories along Barapullah and Shahdara storm drains systematically drain their holding tanks on alternate Friday nights before regulatory offices close for the weekend.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: SCIENTIFIC RIGOR & REMOTE-SENSING QA */}
+          {activeCategory === 'science' && (
+            <div className="space-y-4">
+              <div className="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-2">
+                <h3 className="text-base font-bold text-cyan-300 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-cyan-400" />
+                  5 Scientific Quality Assurance Pillars
+                </h3>
+                <p className="text-slate-300 leading-relaxed text-xs">
+                  YamunaPulse implements five rigorous remote sensing and statistical safeguards to ensure satellite observations are free of terrestrial contamination, atmospheric noise, and seasonal bias:
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* 1. Dynamic Water Masking */}
+                <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-cyan-400 text-xs uppercase tracking-wider">
+                      1. Dynamic Water Masking (MNDWI)
+                    </span>
+                    <span className="text-[10px] bg-cyan-950 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-800/60 font-mono">
+                      Per-Pass
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    During dry summer months, river water levels fall and the active channel contracts. The pipeline dynamically calculates <strong>Xu Modified NDWI (MNDWI &gt; 0)</strong> and <strong>NDWI (&gt; 0.15)</strong> on every single pass. This isolates active flowing water from exposed riverbanks, mudflats, and shoreline weeds so dry soil never skews water quality numbers.
+                  </p>
+                </div>
+
+                {/* 2. Surface Reflectance & Cloud/Glint Filtering */}
+                <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-emerald-400 text-xs uppercase tracking-wider">
+                      2. Surface Reflectance & SCL Glint Filter
+                    </span>
+                    <span className="text-[10px] bg-emerald-950 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-800/60 font-mono">
+                      Sen2Cor BOA
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    We query <strong>Sentinel-2 Level-2A</strong> atmospherically corrected Bottom-Of-Atmosphere (BOA) surface reflectance. In addition, the Scene Classification Layer (SCL) filters out clouds (classes 8, 9), cloud shadows (3), thin cirrus (10), and defective/saturated pixels (1). A spectral glint heuristic also detects and removes specular water surface reflection.
+                  </p>
+                </div>
+
+                {/* 3. Clean Geometry Selection */}
+                <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-amber-400 text-xs uppercase tracking-wider">
+                      3. Clean Geometry Selection
+                    </span>
+                    <span className="text-[10px] bg-amber-950 text-amber-300 px-1.5 py-0.5 rounded border border-amber-800/60 font-mono">
+                      150m Buffer
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Each monitoring node's 150m x 150m bounding box is strategically offset <strong>150m to 300m away from road and railway bridge superstructures</strong> (like Loha Pul, ISBT, and DND Flyway) and weir aprons. This guarantees zero spectral contamination from steel girders, asphalt decks, concrete piers, or turbulent white-water rapids.
+                  </p>
+                </div>
+
+                {/* 4. Seasonal Baseline Comparison */}
+                <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-purple-400 text-xs uppercase tracking-wider">
+                      4. Seasonal Baseline Comparison (&Delta;NDTI)
+                    </span>
+                    <span className="text-[10px] bg-purple-950 text-purple-300 px-1.5 py-0.5 rounded border border-purple-800/60 font-mono">
+                      Season-Stratified
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Rather than using a misleading flat annual average, new satellite observations are benchmarked using <strong>Seasonal Deltas (&Delta;NDTI)</strong> and <strong>Seasonal Z-Scores</strong> against that station's historical same-season and same-month baselines. Natural monsoon silt is never mistaken for an industrial anomaly.
+                  </p>
+                </div>
+
+                {/* 5. Algae Cross-Check */}
+                <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-1.5 md:col-span-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-rose-400 text-xs uppercase tracking-wider">
+                      5. Chlorophyll-a (NDCI) Algae Cross-Check
+                    </span>
+                    <span className="text-[10px] bg-rose-950 text-rose-300 px-1.5 py-0.5 rounded border border-rose-800/60 font-mono">
+                      Dual-Index Safeguard
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Severe eutrophic algal blooms create strong red-light absorption (chlorophyll-a dip in Band 4 at 665 nm), which can artificially pull NDTI downward and hide severe organic pollution. YamunaPulse <strong>pairs NDTI directly with NDCI (Normalized Difference Chlorophyll Index)</strong>. When NDCI &gt; 0.18, the algorithm flags an <em>&ldquo;Algae-Masked Eutrophic Spike&rdquo;</em>, ensuring pollution is never missed.
                   </p>
                 </div>
               </div>

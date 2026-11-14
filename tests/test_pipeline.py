@@ -193,9 +193,73 @@ def test_api_insights():
     res = client.get("/api/analytics/insights?river=yamuna")
     assert res.status_code == 200
     data = res.json()
-    assert len(data["insights"]) >= 4
+    assert len(data["insights"]) >= 5
+    assert any(ins["category"] == "Seasonal Baseline Comparison" for ins in data["insights"])
+    assert any(ins["category"] == "Algae Cross-Check Safeguard" for ins in data["insights"])
 
     res_g = client.get("/api/analytics/insights?river=ganga")
     assert res_g.status_code == 200
     data_g = res_g.json()
-    assert len(data_g["insights"]) >= 4
+    assert len(data_g["insights"]) >= 5
+
+def test_dynamic_water_masking_and_clean_geometry():
+    """Validates Dynamic Water Masking (MNDWI/NDWI) and Clean Geometry Selection."""
+    res = client.get("/api/nodes?river=yamuna")
+    assert res.status_code == 200
+    data = res.json()
+    assert len(data["features"]) == 18
+    palla = data["features"][0]
+    assert "clean_geometry" in palla["properties"]
+    assert palla["properties"]["clean_geometry"]["channel_clearance"] == "unobstructed_mid_channel"
+
+    # Profile verification
+    prof_res = client.get("/api/profile?river=yamuna")
+    assert prof_res.status_code == 200
+    pdata = prof_res.json()
+    first_node = pdata["profile"][0]
+    assert "water_mask" in first_node
+    assert first_node["water_mask"]["active_water_pixels"] > 0
+    assert first_node["water_mask"]["mask_applied"] == "MNDWI_and_NDWI"
+    assert "clean_geometry" in first_node
+
+def test_seasonal_baseline_comparison_and_algae_cross_check():
+    """Validates Seasonal Baseline Deltas (ΔNDTI) and Algae (NDCI) Cross-Check."""
+    # 1. Profile response includes seasonal deltas and Z-scores
+    prof_res = client.get("/api/profile?river=yamuna")
+    assert prof_res.status_code == 200
+    pdata = prof_res.json()
+    node = pdata["profile"][4] # Najafgarh
+    assert "seasonal_baseline_mean" in node
+    assert "seasonal_delta_ndti" in node
+    assert "seasonal_z_score" in node
+    assert "algae_cross_check" in node
+    assert node["algae_cross_check"]["status"] in [
+        "ALGAE_MASKED", "MINERAL_SEDIMENT", "COMBINED_SEWAGE", "PRISTINE_BASEFLOW", "MODERATE_CHANNEL"
+    ]
+
+    # 2. Algae cross check classifier function directly
+    from backend.analytics import classify_algae_cross_check
+    # Case A: Eutrophic bloom with B04 red dip (NDCI high, NDTI depressed)
+    res_masked = classify_algae_cross_check(ndti=0.22, ndci=0.35, dom_ratio=1.45)
+    assert res_masked["status"] == "ALGAE_MASKED"
+
+    # Case B: Mineral rock flour (high NDTI, zero chlorophyll)
+    res_mineral = classify_algae_cross_check(ndti=0.48, ndci=-0.05, dom_ratio=0.95)
+    assert res_mineral["status"] == "MINERAL_SEDIMENT"
+
+    # Case C: Combined domestic sewage
+    res_sewage = classify_algae_cross_check(ndti=0.42, ndci=0.22, dom_ratio=1.55)
+    assert res_sewage["status"] == "COMBINED_SEWAGE"
+
+    # 3. Dedicated Seasonal Anomalies API endpoint
+    anom_res = client.get("/api/analytics/seasonal-anomalies?river=yamuna&z_threshold=1.5")
+    assert anom_res.status_code == 200
+    anom_data = anom_res.json()
+    assert "anomalies" in anom_data
+    assert anom_data["river"] == "yamuna"
+    if len(anom_data["anomalies"]) > 0:
+        a0 = anom_data["anomalies"][0]
+        assert "seasonal_delta" in a0
+        assert "seasonal_z_score" in a0
+        assert "algae_cross_check" in a0
+        assert "water_mask" in a0

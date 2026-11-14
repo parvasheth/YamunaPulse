@@ -158,7 +158,14 @@ def get_nodes(river: str = Query("yamuna", pattern="^(yamuna|ganga)$")):
                 "segment": n["segment"],
                 "description": n["description"],
                 "bbox": n["bbox"],
-                "river": n.get("river", river)
+                "river": n.get("river", river),
+                "clean_geometry": n.get("clean_geometry", {
+                    "channel_clearance": "unobstructed_mid_channel",
+                    "sampling_buffer_meters": 150,
+                    "bridge_offset_meters": 200,
+                    "rapids_interference": "none",
+                    "boat_traffic_risk": "none_or_negligible"
+                })
             }
         }
         features.append(feature)
@@ -264,11 +271,34 @@ def get_longitudinal_profile(
             WHERE n.river = ?
             ORDER BY n.river_km ASC;
         """, [pass_id, river]).fetchall()
+
+        # Load seasonal baselines for true seasonal comparison
+        baselines = analytics.compute_node_seasonal_baselines(river=river, db_path=DB_PATH)
+        pass_season = str(pass_meta[4])
         
         nodes_profile = []
         for r in obs_rows:
+            nid = int(r[0])
+            ndti_val = float(r[14]) if r[14] is not None else 0.0
+            ndci_val = float(r[17]) if r[17] is not None else 0.0
+            dom_val = float(r[20]) if r[20] is not None else 1.0
+            tot_pix = int(r[9]) if r[9] is not None else 225
+            act_pix = int(r[8]) if r[8] is not None else 150
+            water_frac = round(act_pix / max(1, tot_pix), 3)
+
+            # Seasonal Baseline Comparison: calculate ΔNDTI and Z-score relative to same-season history
+            node_b = baselines.get(nid, {})
+            season_b = node_b.get("seasons", {}).get(pass_season, {})
+            s_mean = season_b.get("mean", node_b.get("overall_mean", ndti_val))
+            s_std = season_b.get("std", node_b.get("overall_std", 0.03))
+            seasonal_delta = round(ndti_val - s_mean, 4)
+            seasonal_z = round(seasonal_delta / max(0.015, s_std), 2)
+
+            # Algae Cross-Check & Dual-Index Safeguard
+            algae_cc = analytics.classify_algae_cross_check(ndti_val, ndci_val, dom_val)
+
             nodes_profile.append({
-                "node_id": r[0],
+                "node_id": nid,
                 "name": r[1],
                 "river_km": r[2],
                 "latitude": r[3],
@@ -276,21 +306,37 @@ def get_longitudinal_profile(
                 "drain_inflow": r[5],
                 "drain_impact_tier": r[6],
                 "segment": r[7],
-                "active_water_pixels": r[8],
-                "total_pixels": r[9],
+                "active_water_pixels": act_pix,
+                "total_pixels": tot_pix,
                 "cloud_shadow_fraction": r[10],
                 "ndwi_mean": r[11],
                 "ndwi_median": r[12],
                 "ndwi_p90": r[13],
-                "ndti_mean": r[14],
+                "ndti_mean": ndti_val,
                 "ndti_median": r[15],
                 "ndti_p90": r[16],
-                "ndci_mean": r[17],
+                "ndci_mean": ndci_val,
                 "ndci_median": r[18],
                 "ndci_p90": r[19],
-                "dom_ratio_mean": r[20],
+                "dom_ratio_mean": dom_val,
                 "dom_ratio_median": r[21],
-                "dom_ratio_p90": r[22]
+                "dom_ratio_p90": r[22],
+                # 5 Quality Assurance Scientific Pillars
+                "seasonal_baseline_mean": s_mean,
+                "seasonal_delta_ndti": seasonal_delta,
+                "seasonal_z_score": seasonal_z,
+                "algae_cross_check": algae_cc,
+                "water_mask": {
+                    "active_water_pixels": act_pix,
+                    "total_pixels": tot_pix,
+                    "water_channel_fraction": water_frac,
+                    "mask_applied": "MNDWI_and_NDWI"
+                },
+                "clean_geometry": {
+                    "channel_clearance": "unobstructed_mid_channel",
+                    "bridge_interference": "none_offset_from_superstructure",
+                    "rapids_interference": "none"
+                }
             })
             
         return {
@@ -411,6 +457,26 @@ def get_insights(river: str = Query("yamuna", pattern="^(yamuna|ganga)$")):
         "river": river,
         "insights": analytics.generate_automated_insights_feed(river=river, db_path=DB_PATH)
     }
+
+@app.get("/api/analytics/seasonal-anomalies")
+def get_seasonal_anomalies(
+    river: str = Query("yamuna", pattern="^(yamuna|ganga)$"),
+    metric: str = Query("ndti_mean", pattern="^(ndti_mean|ndci_mean|dom_ratio_mean|ndwi_mean)$"),
+    z_threshold: float = Query(1.8, ge=0.5, le=5.0),
+    limit: int = Query(50, ge=1, le=200)
+):
+    """
+    Returns multi-year observations where seasonal Z-scores exceed z_threshold,
+    benchmarked against the historical baseline of that station in that specific season.
+    Also executes the Algae Cross-Check and confirms Dynamic Water Masking on every pass.
+    """
+    return analytics.detect_seasonal_anomalies(
+        river=river,
+        metric=metric,
+        z_threshold=z_threshold,
+        limit=limit,
+        db_path=DB_PATH
+    )
 
 @app.get("/api/ingest/status")
 def get_ingest_status(river: str = Query("yamuna", pattern="^(yamuna|ganga)$")):

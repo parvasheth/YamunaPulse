@@ -174,6 +174,49 @@ export const NodeInspectorModal: React.FC<NodeInspectorModalProps> = ({
             </div>
           )}
         </div>
+
+        {/* 5 Scientific Quality Assurance Verification Pillars */}
+        <div className="bg-slate-950/90 border border-slate-800/90 rounded-xl p-3 space-y-2 text-xs">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
+            <span className="font-bold text-slate-200 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              Quality Assurance & Remote-Sensing Validation
+            </span>
+            <span className="text-[10px] text-cyan-400 font-mono bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800/60">
+              Sentinel-2 L2A (BOA)
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+            <div className="bg-slate-900/60 border border-slate-800 p-2 rounded-lg">
+              <span className="font-semibold text-cyan-300 block mb-0.5">1. Dynamic Water Masking (MNDWI)</span>
+              <p className="text-slate-400 leading-snug">
+                Applies per-pass MNDWI & NDWI (&gt;0.15) segmentation. Excludes dry sandbars, exposed mudflats, and riparian weeds.
+              </p>
+            </div>
+
+            <div className="bg-slate-900/60 border border-slate-800 p-2 rounded-lg">
+              <span className="font-semibold text-emerald-300 block mb-0.5">2. Surface Reflectance & SCL Glint Filter</span>
+              <p className="text-slate-400 leading-snug">
+                Sen2Cor L2A atmospherically corrected BOA data with cloud/shadow (SCL 3,8,9,10) and specular sun-glint masking.
+              </p>
+            </div>
+
+            <div className="bg-slate-900/60 border border-slate-800 p-2 rounded-lg">
+              <span className="font-semibold text-amber-300 block mb-0.5">3. Clean Channel Geometry</span>
+              <p className="text-slate-400 leading-snug">
+                150m mid-channel sampling box offset 150m–300m away from road/rail bridge decks and weir turbulence to prevent asphalt/steel bias.
+              </p>
+            </div>
+
+            <div className="bg-slate-900/60 border border-slate-800 p-2 rounded-lg">
+              <span className="font-semibold text-purple-300 block mb-0.5">4. Seasonal Baseline & Algae Cross-Check</span>
+              <p className="text-slate-400 leading-snug">
+                Anomalies calculated via Seasonal ΔNDTI vs historical same-season baseline, paired with NDCI to catch chlorophyll-masked blooms.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

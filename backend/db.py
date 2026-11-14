@@ -21,10 +21,15 @@ _db_write_lock = threading.Lock()
 DB_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 DB_PATH = os.path.join(DB_DIR, "yamunapulse.duckdb")
 
-def get_connection(db_path: str = DB_PATH) -> duckdb.DuckDBPyConnection:
+def get_connection(db_path: str = DB_PATH, read_only: bool = False) -> duckdb.DuckDBPyConnection:
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
-    con = duckdb.connect(db_path)
-    return con
+    try:
+        return duckdb.connect(db_path, read_only=read_only)
+    except duckdb.IOException:
+        if not read_only:
+            # Gracefully fallback to read-only mode if file is locked by another running process
+            return duckdb.connect(db_path, read_only=True)
+        raise
 
 def init_db(db_path: str = DB_PATH):
     """Initializes tables and indexes in DuckDB."""

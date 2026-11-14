@@ -14,18 +14,32 @@
       "drain_inflow": null,
       "drain_impact_tier": "baseline",
       "segment": "Upper Rural Reach",
-      "description": "Delhi entry point with baseline freshwater quality upstream of urban sewage drains."
+      "description": "Delhi entry point with baseline freshwater quality upstream of urban sewage drains.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": "None (>5km)",
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 2,
       "name": "Jagatpur Reach",
       "river_km": 8.5,
-      "latitude": 28.7560,
+      "latitude": 28.756,
       "longitude": 77.2285,
       "drain_inflow": null,
       "drain_impact_tier": "low",
       "segment": "Upper Rural Reach",
-      "description": "Upstream agricultural floodplain reach before urban river containment."
+      "description": "Upstream agricultural floodplain reach before urban river containment.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_floodplain_channel",
+        "bridge_offset_meters": "None (>4km)",
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 3,
@@ -36,18 +50,32 @@
       "drain_inflow": null,
       "drain_impact_tier": "low",
       "segment": "Pondage Zone",
-      "description": "Raw drinking water abstraction point for Delhi water treatment plants."
+      "description": "Raw drinking water abstraction point for Delhi water treatment plants.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_reservoir_pondage",
+        "bridge_offset_meters": 250,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 4,
       "name": "Wazirabad Barrage Downstream",
       "river_km": 14.5,
-      "latitude": 28.7050,
-      "longitude": 77.2370,
+      "latitude": 28.705,
+      "longitude": 77.237,
       "drain_inflow": null,
       "drain_impact_tier": "moderate",
       "segment": "Pondage Spill",
-      "description": "Immediate downstream of barrage; almost zero fresh river flow released during non-monsoon periods."
+      "description": "Immediate downstream of barrage; almost zero fresh river flow released during non-monsoon periods.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_spillway_channel",
+        "bridge_offset_meters": 350,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 5,
@@ -58,18 +86,32 @@
       "drain_inflow": "Najafgarh Drain",
       "drain_impact_tier": "critical",
       "segment": "Central Urban Reach",
-      "description": "Major pollution inflow accounting for ~60% of total sewage/wastewater discharges into the river."
+      "description": "Major pollution inflow accounting for ~60% of total sewage/wastewater discharges into the river.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": 220,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 6,
       "name": "ISBT Kashmere Gate",
       "river_km": 19.5,
-      "latitude": 28.6710,
+      "latitude": 28.671,
       "longitude": 77.2355,
       "drain_inflow": "Mori Gate Drain",
       "drain_impact_tier": "high",
       "segment": "Central Urban Reach",
-      "description": "Urban channel reach heavily loaded with domestic sewage and runoff."
+      "description": "Urban channel reach heavily loaded with domestic sewage and runoff.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": 240,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 7,
@@ -80,62 +122,104 @@
       "drain_inflow": "Bela Road Drain",
       "drain_impact_tier": "high",
       "segment": "Central Urban Reach",
-      "description": "Historic landmark gauging site; continuous organic load and elevated turbidity."
+      "description": "Historic landmark gauging site; continuous organic load and elevated turbidity.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": 190,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 8,
       "name": "Geeta Colony / Shantivan",
       "river_km": 23.5,
-      "latitude": 28.6430,
-      "longitude": 77.2540,
+      "latitude": 28.643,
+      "longitude": 77.254,
       "drain_inflow": "Civil Lines Drain",
       "drain_impact_tier": "high",
       "segment": "Central Urban Reach",
-      "description": "Central river corridor with substantial domestic and industrial outfalls."
+      "description": "Central river corridor with substantial domestic and industrial outfalls.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": 280,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 9,
       "name": "ITO Barrage Upstream",
       "river_km": 25.5,
       "latitude": 28.6295,
-      "longitude": 77.2530,
+      "longitude": 77.253,
       "drain_inflow": "Drain No. 12",
       "drain_impact_tier": "high",
       "segment": "Central Urban Reach",
-      "description": "Stagnant urban pool behind ITO Barrage gates with severe algal blooms."
+      "description": "Stagnant urban pool behind ITO Barrage gates with severe algal blooms.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_barrage_pondage",
+        "bridge_offset_meters": 210,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 10,
       "name": "Delhi Gate Drain Outfall",
       "river_km": 26.5,
-      "latitude": 28.6250,
+      "latitude": 28.625,
       "longitude": 77.2545,
       "drain_inflow": "Delhi Gate Drain",
       "drain_impact_tier": "critical",
       "segment": "Central Urban Reach",
-      "description": "Heavy untreated domestic wastewater and industrial effluent outfall."
+      "description": "Heavy untreated domestic wastewater and industrial effluent outfall.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": 180,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 11,
       "name": "Barapullah / Nizamuddin Reach",
       "river_km": 30.5,
-      "latitude": 28.5910,
+      "latitude": 28.591,
       "longitude": 77.2625,
       "drain_inflow": "Barapullah Drain",
       "drain_impact_tier": "critical",
       "segment": "South Central Reach",
-      "description": "Third largest drain outfall carrying sewage from South Delhi and satellite colonies."
+      "description": "Third largest drain outfall carrying sewage from South Delhi and satellite colonies.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": 250,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 12,
       "name": "DND Flyway Reach",
       "river_km": 32.5,
       "latitude": 28.5775,
-      "longitude": 77.2790,
+      "longitude": 77.279,
       "drain_inflow": "Sen Nursing Home Drain",
       "drain_impact_tier": "high",
       "segment": "South Central Reach",
-      "description": "Broad meandering section characterized by persistent black-sludge deposition."
+      "description": "Broad meandering section characterized by persistent black-sludge deposition.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": 260,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 13,
@@ -146,7 +230,14 @@
       "drain_inflow": "Maharani Bagh Drain",
       "drain_impact_tier": "high",
       "segment": "Okhla Pondage",
-      "description": "Upstream of Okhla Barrage with thick foam mats and excessive surfactant concentrations."
+      "description": "Upstream of Okhla Barrage with thick foam mats and excessive surfactant concentrations.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_reservoir_pondage",
+        "bridge_offset_meters": 300,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 14,
@@ -157,51 +248,86 @@
       "drain_inflow": "Kalkaji Drain",
       "drain_impact_tier": "high",
       "segment": "Okhla Pondage",
-      "description": "Site of toxic white froth during winter and post-monsoon seasons."
+      "description": "Site of toxic white froth during winter and post-monsoon seasons.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": 250,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 15,
       "name": "Okhla Barrage Downstream",
       "river_km": 40.0,
       "latitude": 28.5365,
-      "longitude": 77.3190,
+      "longitude": 77.319,
       "drain_inflow": "Shahdara Drain Outfall",
       "drain_impact_tier": "critical",
       "segment": "Lower Industrial Reach",
-      "description": "Inflow of Shahdara drain carrying heavy untreated industrial and urban effluents from East Delhi."
+      "description": "Inflow of Shahdara drain carrying heavy untreated industrial and urban effluents from East Delhi.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": 400,
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 16,
       "name": "Jaitpur Reach",
       "river_km": 42.5,
-      "latitude": 28.5280,
+      "latitude": 28.528,
       "longitude": 77.3245,
       "drain_inflow": "Tehkhand Drain",
       "drain_impact_tier": "high",
       "segment": "Lower Industrial Reach",
-      "description": "Dense informal settlements and industrial discharges from Okhla Industrial Area."
+      "description": "Dense informal settlements and industrial discharges from Okhla Industrial Area.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": "None (>3km)",
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 17,
       "name": "Madanpur Khadar",
       "river_km": 45.0,
-      "latitude": 28.5190,
+      "latitude": 28.519,
       "longitude": 77.3295,
       "drain_inflow": "Tughlakabad Drain",
       "drain_impact_tier": "high",
       "segment": "Lower Industrial Reach",
-      "description": "Confluence with Tughlakabad drain system carrying chemical and dye industry effluents."
+      "description": "Confluence with Tughlakabad drain system carrying chemical and dye industry effluents.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": "None (>4km)",
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     },
     {
       "node_id": 18,
       "name": "Shahdara Confluence & Asgarpur",
       "river_km": 48.0,
-      "latitude": 28.5130,
-      "longitude": 77.3340,
+      "latitude": 28.513,
+      "longitude": 77.334,
       "drain_inflow": "Agra Canal / Asgarpur Confluence",
       "drain_impact_tier": "critical",
       "segment": "Exit Border Reach",
-      "description": "Yamuna leaves NCT Delhi into Uttar Pradesh; peak cumulative chemical and organic pollution."
+      "description": "Yamuna leaves NCT Delhi into Uttar Pradesh; peak cumulative chemical and organic pollution.",
+      "clean_geometry": {
+        "channel_clearance": "unobstructed_mid_channel",
+        "bridge_offset_meters": "None (>2km)",
+        "rapids_interference": "none",
+        "boat_traffic_risk": "none_or_negligible",
+        "sampling_buffer_meters": 150
+      }
     }
   ]
 }

@@ -46,6 +46,11 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
       active_water_pixels: obs.active_water_pixels,
       total_pixels: obs.total_pixels,
       segment: obs.segment,
+      seasonal_baseline_mean: obs.seasonal_baseline_mean,
+      seasonal_delta_ndti: obs.seasonal_delta_ndti,
+      seasonal_z_score: obs.seasonal_z_score,
+      algae_cross_check: obs.algae_cross_check,
+      water_mask: obs.water_mask,
     };
   });
 
@@ -70,16 +75,40 @@ export const LongitudinalProfileChart: React.FC<LongitudinalProfileChartProps> =
               <span className="text-slate-400">{metricConfig.shortName}:</span>
               <span className="font-bold text-emerald-400">{data.value}</span>
             </div>
+            {data.seasonal_delta_ndti !== undefined && (
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="text-slate-400">Seasonal ΔNDTI:</span>
+                <span className={`font-mono font-bold ${data.seasonal_delta_ndti > 0.04 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                  {data.seasonal_delta_ndti > 0 ? `+${data.seasonal_delta_ndti}` : data.seasonal_delta_ndti} ({data.seasonal_z_score > 0 ? `+${data.seasonal_z_score}` : data.seasonal_z_score}σ)
+                </span>
+              </div>
+            )}
             <div className="flex justify-between">
-              <span className="text-slate-400">Water Channel Pixels:</span>
+              <span className="text-slate-400">Dynamic Water Mask:</span>
               <span className="font-medium text-slate-200">
-                {data.active_water_pixels} / {data.total_pixels}
+                {data.active_water_pixels} / {data.total_pixels} px (MNDWI)
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">River Reach:</span>
               <span className="text-slate-300">{data.segment}</span>
             </div>
+            {data.algae_cross_check && (
+              <div className="mt-1 pt-1 border-t border-slate-800 flex items-center justify-between text-[10px]">
+                <span className="text-slate-400">Algae Cross-Check:</span>
+                <span className={`px-1.5 py-0.5 rounded font-semibold ${
+                  data.algae_cross_check.status === 'ALGAE_MASKED'
+                    ? 'bg-amber-950 text-amber-300 border border-amber-800'
+                    : data.algae_cross_check.status === 'COMBINED_SEWAGE'
+                    ? 'bg-rose-950 text-rose-300 border border-rose-800'
+                    : data.algae_cross_check.status === 'MINERAL_SEDIMENT'
+                    ? 'bg-cyan-950 text-cyan-300 border border-cyan-800'
+                    : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                }`}>
+                  {data.algae_cross_check.label}
+                </span>
+              </div>
+            )}
             {data.drain_inflow && (
               <div className="mt-1 pt-1 border-t border-slate-800 text-amber-300 flex items-center gap-1 font-semibold">
                 <AlertCircle className="w-3 h-3 text-amber-400" />

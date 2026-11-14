@@ -2,13 +2,19 @@
 YamunaPulse STAC Satellite Ingestion & Spectral Engine
 Queries Microsoft Planetary Computer STAC for Sentinel-2 L2A scenes over the Delhi Yamuna and Haridwar Ganga corridors.
 Extracts 150m x 150m bounding box rasters per monitoring node.
-Applies SCL (Scene Classification Layer) cloud/shadow masking (>20% threshold).
-Performs dynamic water pixel segmentation: NDWI > 0.15.
-Calculates water quality indices:
-  - NDTI (Turbidity) = (B04 - B03) / (B04 + B03)
-  - NDCI (Chlorophyll-a / Eutrophication) = (B05 - B04) / (B05 + B04)
-  - DOM_Ratio (Dissolved Organic Matter / Dye) = B03 / B02
-Provides deterministic high-resolution multi-year physical backfill generation for both Yamuna and Ganga.
+
+Scientific Quality Assurance Pillars:
+1. Dynamic Water Masking: Applies MNDWI (Green B03 vs SWIR-1 B11) and NDWI (B03 vs NIR B08) dynamic segmentation
+   to delineate active water channel boundaries from exposed riverbanks, mudflats, and riparian vegetation on every pass.
+2. Surface Reflectance & Cloud/Glint Filtering: Utilizes Sentinel-2 Level-2A Bottom-Of-Atmosphere (BOA) surface reflectance
+   and Sen2Cor SCL (Scene Classification Layer) to rigorously mask clouds (8, 9), cloud shadows (3), cirrus (10),
+   topographic/bank shadows (2), and defective/specular sun glint (1).
+3. Clean Geometry Selection: Every monitoring node is offset 150m-300m away from bridge superstructures and weir foam/rapids
+   to ensure the 150m sample box contains exclusively unobstructed open channel water.
+4. Seasonal Baseline Comparison: Real-time and historical observations are benchmarked against historical same-season and
+   same-month baselines via Seasonal Deltas (ΔNDTI) and Seasonal Z-scores rather than flat annual averages.
+5. Algae Cross-Check: Turbidity/sediment (NDTI) anomalies are concurrently paired with chlorophyll-a (NDCI) to detect
+   eutrophic algal blooms that artificially depress red-band reflectance (B04 dip) and mask pollution.
 """
 
 import os
@@ -138,12 +144,19 @@ def extract_node_spectral_indices(
         if total_pixels == 0:
             return None
             
-        cloud_shadow_mask = np.isin(scl_data, [3, 8, 9, 10])
-        cloud_shadow_frac = float(np.sum(cloud_shadow_mask) / total_pixels)
+        # SCL Quality Masking:
+        # 0: NO_DATA, 1: SATURATED_OR_DEFECTIVE (specular sun glint & sensor saturation), 2: DARK_AREA_PIXELS (shadows),
+        # 3: CLOUD_SHADOWS, 8: CLOUD_MEDIUM_PROBABILITY, 9: CLOUD_HIGH_PROBABILITY, 10: THIN_CIRRUS, 11: SNOW_ICE
+        invalid_scl_mask = np.isin(scl_data, [0, 1, 2, 3, 8, 9, 10, 11])
+        cloud_shadow_frac = float(np.sum(invalid_scl_mask) / total_pixels)
         is_valid = cloud_shadow_frac <= 0.20
         
         band_data = {}
-        for b in ["B02", "B03", "B04", "B05", "B08"]:
+        target_bands = ["B02", "B03", "B04", "B05", "B08"]
+        if "B11" in assets:
+            target_bands.append("B11")
+            
+        for b in target_bands:
             with rasterio.open(assets[b].href) as ds:
                 bounds = transform_bounds("EPSG:4326", ds.crs, *bbox)
                 win = from_bounds(*bounds, ds.transform)
@@ -155,12 +168,23 @@ def extract_node_spectral_indices(
         b04 = band_data["B04"]
         b05 = band_data["B05"]
         b08 = band_data["B08"]
+        has_b11 = "B11" in band_data
+        b11 = band_data["B11"] if has_b11 else None
         
+        # 1. Dynamic Water Masking (NDWI + Xu Modified NDWI MNDWI)
         ndwi = safe_divide(b03 - b08, b03 + b08, default=-1.0)
-        water_mask = (ndwi > 0.15) & (~cloud_shadow_mask)
-        active_water_pixels = int(np.sum(water_mask))
-        eval_mask = water_mask if active_water_pixels > 0 else (~cloud_shadow_mask)
+        mndwi = safe_divide(b03 - b11, b03 + b11, default=-1.0) if has_b11 else ndwi
         
+        # Sun-glint spectral artifact filter on water channel: specular reflection causes high NIR and Red
+        glint_mask = (b08 > 0.35) & (b04 > 0.35)
+        clean_obs_mask = (~invalid_scl_mask) & (~glint_mask)
+        
+        # Segment active flowing water channel from dry riverbanks, sandbars, and mudflats
+        water_mask = ((mndwi > 0.0) | (ndwi > 0.15)) & clean_obs_mask
+        active_water_pixels = int(np.sum(water_mask))
+        eval_mask = water_mask if active_water_pixels > 0 else clean_obs_mask
+        
+        # 2. Water Quality & Spectral Indices
         ndti = safe_divide(b04 - b03, b04 + b03, default=0.0)
         ndci = safe_divide(b05 - b04, b05 + b04, default=0.0)
         dom_ratio = safe_divide(b03, np.where(b02 > 0, b02, 1e-4), default=1.0)
@@ -172,18 +196,25 @@ def extract_node_spectral_indices(
             return float(np.mean(vals)), float(np.median(vals)), float(np.percentile(vals, 90))
             
         ndwi_mean, ndwi_med, ndwi_p90 = get_stats(ndwi, eval_mask)
+        mndwi_mean, mndwi_med, mndwi_p90 = get_stats(mndwi, eval_mask)
         ndti_mean, ndti_med, ndti_p90 = get_stats(ndti, eval_mask)
         ndci_mean, ndci_med, ndci_p90 = get_stats(ndci, eval_mask)
         dom_mean, dom_med, dom_p90 = get_stats(dom_ratio, eval_mask)
+        
+        # 3. Algae Cross-Check & Dual-Index Classification
+        # Eutrophic algal blooms produce a steep red-band (B04) absorption dip, which pulls NDTI downward
+        is_algae_masked = bool(ndci_mean > 0.18 and ndti_mean < 0.25)
         
         return {
             "cloud_shadow_fraction": round(cloud_shadow_frac, 4),
             "is_valid_pass": is_valid,
             "active_water_pixels": active_water_pixels,
             "total_pixels": total_pixels,
+            "water_channel_fraction": round(active_water_pixels / max(total_pixels, 1), 3),
             "ndwi_mean": round(ndwi_mean, 4),
             "ndwi_median": round(ndwi_med, 4),
             "ndwi_p90": round(ndwi_p90, 4),
+            "mndwi_mean": round(mndwi_mean, 4),
             "ndti_mean": round(ndti_mean, 4),
             "ndti_median": round(ndti_med, 4),
             "ndti_p90": round(ndti_p90, 4),
@@ -193,6 +224,7 @@ def extract_node_spectral_indices(
             "dom_ratio_mean": round(dom_mean, 4),
             "dom_ratio_median": round(dom_med, 4),
             "dom_ratio_p90": round(dom_p90, 4),
+            "is_algae_masked": is_algae_masked,
         }
     except Exception as e:
         logger.warning("Error processing node %s from STAC item %s: %s", node.get("node_id"), item.id, e)
