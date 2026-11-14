@@ -168,6 +168,7 @@ export const NodeInspectorModal: React.FC<NodeInspectorModalProps> = ({
                     stroke="#38bdf8"
                     strokeWidth={1.8}
                     dot={false}
+                    isAnimationActive={false}
                   />
                 </LineChart>
               </ResponsiveContainer>
