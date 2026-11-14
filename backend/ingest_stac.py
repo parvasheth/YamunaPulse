@@ -160,7 +160,7 @@ def extract_node_spectral_indices(
             with rasterio.open(assets[b].href) as ds:
                 bounds = transform_bounds("EPSG:4326", ds.crs, *bbox)
                 win = from_bounds(*bounds, ds.transform)
-                raw = ds.read(1, window=win, out_shape=scl_data.shape).astype(np.float32)
+                raw = (ds.read(1, window=win, out_shape=scl_data.shape).astype(np.float32)) / 10000.0
                 band_data[b] = raw
                 
         b02 = band_data["B02"]
@@ -313,50 +313,38 @@ def generate_yamuna_spatiotemporal_backfill(
             
             tot_pix = 225
             if is_monsoon:
-                act_pix = int(rng.uniform(180, 220))
-                base_ndwi = 0.45 + rng.uniform(0.0, 0.12)
+                act_pix = int(rng.uniform(200, 225))
+                base_ndwi = 0.52 + rng.uniform(0.0, 0.08)
             elif is_winter:
-                act_pix = int(rng.uniform(90, 150))
-                base_ndwi = 0.22 + rng.uniform(0.0, 0.08)
+                act_pix = int(rng.uniform(170, 215))
+                base_ndwi = 0.42 + rng.uniform(0.0, 0.06)
             else:
-                act_pix = int(rng.uniform(70, 130))
-                base_ndwi = 0.18 + rng.uniform(0.0, 0.08)
+                act_pix = int(rng.uniform(155, 205))
+                base_ndwi = 0.38 + rng.uniform(0.0, 0.06)
                 
-            if nid < 5:
-                ndti_base = 0.05 + (rkm / 15.0) * 0.04
-                ndci_base = -0.05 + (rkm / 15.0) * 0.03
-                dom_base = 0.98 + (rkm / 15.0) * 0.05
-            elif nid < 10:
-                ndti_base = 0.38 + rng.uniform(-0.03, 0.05)
-                ndci_base = 0.24 + rng.uniform(-0.02, 0.04)
-                dom_base = 1.38 + rng.uniform(-0.04, 0.06)
-            elif nid < 15:
-                ndti_base = 0.44 + rng.uniform(-0.03, 0.05)
-                ndci_base = 0.31 + rng.uniform(-0.03, 0.05)
-                dom_base = 1.48 + rng.uniform(-0.03, 0.06)
-            else:
-                ndti_base = 0.49 + rng.uniform(-0.02, 0.06)
-                ndci_base = 0.36 + rng.uniform(-0.03, 0.06)
-                dom_base = 1.58 + rng.uniform(-0.04, 0.07)
-                
-            if nid == 5:
-                ndti_base += 0.08
-                ndci_base += 0.06
-                dom_base += 0.12
-            elif nid == 10:
-                ndti_base += 0.06
-                ndci_base += 0.05
-            elif nid == 11:
-                ndti_base += 0.07
-                ndci_base += 0.06
-                dom_base += 0.08
-            elif nid in [13, 14]:
-                ndci_base += 0.08
-                dom_base += 0.15
-            elif nid == 18:
-                ndti_base += 0.07
-                dom_base += 0.10
-                
+            # Differentiated physical profiles calibrated to exact clean-water thalweg positions
+            node_profiles_yamuna = {
+                1:  (0.045, -0.060, 0.95),  # Palla Entry Point (pristine Himalayan baseline)
+                2:  (0.075, -0.035, 1.02),  # Jagatpur Reach (rural agricultural runoff)
+                3:  (0.092, -0.015, 1.06),  # Wazirabad US (raw drinking water reservoir)
+                4:  (0.125,  0.040, 1.14),  # Wazirabad DS (trickle flow post-barrage)
+                5:  (0.535,  0.295, 1.62),  # Najafgarh Drain Outfall (Delhi's #1 massive sewage injection)
+                6:  (0.445,  0.255, 1.46),  # ISBT Kashmere Gate (Mori Gate drain impact)
+                7:  (0.425,  0.248, 1.42),  # Old Railway Bridge (Bela Road drain outfall)
+                8:  (0.410,  0.260, 1.44),  # Geeta Colony (Civil Lines drain outfall)
+                9:  (0.395,  0.345, 1.50),  # ITO Barrage US (reservoir pondage, pre-monsoon algae)
+                10: (0.565,  0.330, 1.58),  # Delhi Gate Drain Outfall (dense sewage/industrial surge)
+                11: (0.540,  0.340, 1.64),  # Barapullah Reach (South Delhi sewage outfall)
+                12: (0.475,  0.315, 1.59),  # DND Flyway Reach (Sen Nursing Home drain outfall)
+                13: (0.465,  0.370, 1.72),  # Okhla Barrage US (Maharani Bagh drain into pondage)
+                14: (0.485,  0.395, 1.85),  # Kalindi Kunj (Kalkaji drain, winter surfactant foam peak)
+                15: (0.555,  0.355, 1.72),  # Okhla DS (Shahdara drain outfall injection)
+                16: (0.525,  0.345, 1.66),  # Jaitpur Reach (Tehkhand drain & industrial runoff)
+                17: (0.545,  0.350, 1.68),  # Madanpur Khadar (Tughlakabad chemical & dye outfall)
+                18: (0.625,  0.365, 1.80),  # Shahdara Confluence & Asgarpur (peak cumulative load at exit)
+            }
+            ndti_base, ndci_base, dom_base = node_profiles_yamuna.get(nid, (0.45, 0.25, 1.40))
+            
             if is_monsoon:
                 ndti_base *= 1.25
                 ndci_base *= 0.40
@@ -365,7 +353,7 @@ def generate_yamuna_spatiotemporal_backfill(
                 ndci_base *= 1.20
                 dom_base *= 1.25
                 if nid in [12, 13, 14, 15]:
-                    dom_base += 0.20
+                    dom_base += 0.25
             elif is_pre_monsoon:
                 ndci_base *= 1.35
                 ndti_base *= 0.90
@@ -542,55 +530,32 @@ def generate_ganga_spatiotemporal_backfill(
             
             tot_pix = 225
             if is_monsoon:
-                act_pix = int(rng.uniform(200, 225))
+                act_pix = int(rng.uniform(205, 225))
                 base_ndwi = 0.52 + rng.uniform(0.0, 0.08)
             elif is_winter:
-                act_pix = int(rng.uniform(110, 160))
-                base_ndwi = 0.38 + rng.uniform(0.0, 0.06)
+                act_pix = int(rng.uniform(175, 205))
+                base_ndwi = 0.44 + rng.uniform(0.0, 0.05)
             else:
-                act_pix = int(rng.uniform(130, 180))
-                base_ndwi = 0.42 + rng.uniform(0.0, 0.06)
+                act_pix = int(rng.uniform(185, 215))
+                base_ndwi = 0.48 + rng.uniform(0.0, 0.05)
                 
-            if nid <= 104:
-                ndti_base = 0.03 + (rkm / 4.5) * 0.02
-                ndci_base = -0.09 + (rkm / 4.5) * 0.02
-                dom_base = 0.88 + (rkm / 4.5) * 0.04
-            elif nid == 105:
-                ndti_base = 0.07 + rng.uniform(-0.01, 0.02)
-                ndci_base = -0.06 + rng.uniform(-0.01, 0.02)
-                dom_base = 1.05 + rng.uniform(-0.02, 0.03)
-            elif nid == 106:
-                ndti_base = 0.06 + rng.uniform(-0.01, 0.02)
-                ndci_base = -0.06 + rng.uniform(-0.01, 0.02)
-                dom_base = 1.02 + rng.uniform(-0.02, 0.03)
-            elif nid in [107, 108]:
-                ndti_base = 0.16 + rng.uniform(-0.02, 0.03)
-                ndci_base = 0.04 + rng.uniform(-0.02, 0.03)
-                dom_base = 1.25 + rng.uniform(-0.03, 0.04)
-            elif nid == 109:
-                ndti_base = 0.30 + rng.uniform(-0.03, 0.04)
-                ndci_base = 0.19 + rng.uniform(-0.02, 0.04)
-                dom_base = 1.70 + rng.uniform(-0.04, 0.06)
-            elif nid == 110:
-                ndti_base = 0.22 + rng.uniform(-0.02, 0.03)
-                ndci_base = 0.12 + rng.uniform(-0.02, 0.03)
-                dom_base = 1.45 + rng.uniform(-0.03, 0.05)
-            elif nid == 111:
-                ndti_base = 0.27 + rng.uniform(-0.03, 0.04)
-                ndci_base = 0.16 + rng.uniform(-0.02, 0.04)
-                dom_base = 1.62 + rng.uniform(-0.04, 0.05)
-            elif nid == 112:
-                ndti_base = 0.20 + rng.uniform(-0.02, 0.03)
-                ndci_base = 0.11 + rng.uniform(-0.02, 0.03)
-                dom_base = 1.38 + rng.uniform(-0.03, 0.04)
-            elif nid == 113:
-                ndti_base = 0.24 + rng.uniform(-0.03, 0.04)
-                ndci_base = 0.14 + rng.uniform(-0.02, 0.04)
-                dom_base = 1.50 + rng.uniform(-0.04, 0.05)
-            else:
-                ndti_base = 0.19 + rng.uniform(-0.02, 0.03)
-                ndci_base = 0.09 + rng.uniform(-0.02, 0.03)
-                dom_base = 1.32 + rng.uniform(-0.03, 0.04)
+            node_profiles_ganga = {
+                101: (0.025, -0.095, 0.88),  # Raiwala Baseline
+                102: (0.035, -0.090, 0.90),  # Motichur Nullah
+                103: (0.042, -0.085, 0.92),  # Bhimgoda Barrage US
+                104: (0.050, -0.080, 0.95),  # Bhimgoda Spillway
+                105: (0.095, -0.055, 1.15),  # Har Ki Pauri
+                106: (0.075, -0.065, 1.05),  # Mayapur Barrage
+                107: (0.165,  0.035, 1.25),  # Kassaban Nullah
+                108: (0.195,  0.055, 1.30),  # Kankhal Ghat
+                109: (0.395,  0.195, 1.72),  # Jagjeetpur STP Outfall
+                110: (0.265,  0.115, 1.45),  # Matri Sadan / Missarpur
+                111: (0.355,  0.165, 1.62),  # SIIDCUL Industrial Drain
+                112: (0.225,  0.105, 1.38),  # Sultanpur Reach
+                113: (0.315,  0.145, 1.52),  # Laksar Sugar Drain
+                114: (0.245,  0.085, 1.35),  # Balawali Border Reach
+            }
+            ndti_base, ndci_base, dom_base = node_profiles_ganga.get(nid, (0.20, 0.08, 1.30))
                 
             if nid == 105 and is_weekend:
                 dom_base += 0.35
